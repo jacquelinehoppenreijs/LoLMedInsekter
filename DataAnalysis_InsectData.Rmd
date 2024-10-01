@@ -1,0 +1,24 @@
+---
+title: "DataAnalysis_InsectData"
+author: "JacquelineHoppenreijs"
+date: "`r Sys.Date()`"
+bibliography: references.bib
+output: word_document
+---
+# R Markdown
+Built with R version `r getRversion()`
+
+# Data description
+
+
+```{r setting the scene}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+
+library(pacman)
+p_load(readxl, tidyverse, plyr, dplyr, lattice, gridExtra, ggplot2, png, reshape2, colorblindcheck, lme4, emmeans, effectsize, MuMIn, performance, DHARMa, regclass, broom, vegan, patchwork, scales)
+
+palette <- c("#104e8b", "#458b00", "#eead0e", "#9F2B68")
+palette_check(palette)
+palette_bivariate_plot(palette)
+
+```
