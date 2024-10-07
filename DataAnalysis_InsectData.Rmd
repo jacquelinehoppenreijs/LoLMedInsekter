@@ -11,14 +11,46 @@ Built with R version `r getRversion()`
 # Data description
 
 
-```{r setting the scene}
+```{r setting the scene, include = FALSE}
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
 
 library(pacman)
 p_load(readxl, tidyverse, plyr, dplyr, lattice, gridExtra, ggplot2, png, reshape2, colorblindcheck, lme4, emmeans, effectsize, MuMIn, performance, DHARMa, regclass, broom, vegan, patchwork, scales)
 
-palette <- c("#104e8b", "#458b00", "#eead0e", "#9F2B68")
-palette_check(palette)
-palette_bivariate_plot(palette)
+#palette <- c("#104e8b", "#458b00", "#eead0e", "#9F2B68")
+#palette_check(palette)
+#palette_bivariate_plot(palette)
 
 ```
+
+```{r loading insect data, include = FALSE}
+insect_data_2024 <- read_excel("./Data/LoL_data_JH20241007.xlsx", sheet = "LoL_insectinfo_JH20240909")
+insect_data_2024$Site <- as.factor(insect_data_2024$Site)
+insect_data_2024$Site_type <- as.factor(insect_data_2024$Site_type)
+insect_data_2024$Week <- as.factor(insect_data_2024$Week)
+insect_data_2024$Species_sv <- as.factor(insect_data_2024$Species_sv)
+insect_data_2024$Order_lt <- as.factor(insect_data_2024$Order_lt)
+insect_data_2024$`Pollinator?` <- as.factor(insect_data_2024$`Pollinator?`)
+insect_data_2024$Behaviour <- as.factor(insect_data_2024$Behaviour)
+
+str(insect_data_2024)
+
+insect_data_2024 <- subset(insect_data_2024, `Pollinator?` == "Yes")
+#insect_data_2024 <- subset(insect_data_2024, !(Behaviour == "Flying by"))
+
+str(insect_data_2024)
+```
+
+```{r build insect df}
+df_insects_2024 <- insect_data_2024 %>%
+  group_by(Site, Week) %>%
+  summarise(SR = count(Species_sv)) #‘sum’ not meaningful for factors
+str(df_insects_2024)
+```
+
+
+```{r plotting insect data, per week}
+insect_df <- ggplot(insect_data_2024, aes(x = Week, y = count)
+```
+
+
