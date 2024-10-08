@@ -80,8 +80,9 @@ print(plant_SR_2024)
 plot_plantSR_2024 <- ggplot(df_plants_2024, aes(x = as.factor(Week), y = SR, fill = Site)) +
   geom_bar(stat = "identity", position = "dodge") +
   scale_y_continuous(name = "Artrikedom (minus gräss och träd)", limits = c(0, 25), breaks = c(5, 10, 15, 20, 25)) +
-  scale_fill_manual(values = site_colors) +
-  labs(x = "Vecka", fill = NULL) +
+  scale_fill_manual(values = site_colors, ) +
+  labs(x = "Vecka", fill = "Typ av lokal") +
+  theme(legend.position = "bottom") + 
   theme_classic()
 plot_plantSR_2024
 ```
@@ -145,12 +146,18 @@ insect_Abundance_2024 = sum(df_insects_2024$Abundance)
 print(insect_Abundance_2024)
 ```
 
+```{r list all insect species in 2024, include = TRUE}
+list_insects_2024 = list(unique(insect_data_2024$Species_sv))
+
+print(list_insects_2024)
+```
+
 ```{r plotting insect data, per week}
 plot_insectAb_2024 <- ggplot(df_insects_2024, aes(x = as.factor(Week), y = Abundance, fill = Site)) +
   geom_bar(stat = "identity", position = "dodge") +
   scale_y_continuous(name = "Antal insekter", limits = c(0, 50)) +
   scale_fill_manual(values = site_colors) +
-  labs(x = "Vecka", fill = NULL) +
+  labs(x = "Vecka", fill = "Typ av lokal") +
   theme_classic()
 plot_insectAb_2024
 
@@ -159,7 +166,7 @@ plot_insectSR_2024 <- ggplot(df_insects_2024, aes(x = as.factor(Week), y = SR, f
   geom_bar(stat = "identity", position = "dodge") +
   scale_y_continuous(name = "Artrikedom insekter", limits = c(0, 12), breaks = c(2, 4, 6, 8, 10, 12)) +
   scale_fill_manual(values = site_colors) +
-  labs(x = "Vecka", fill = NULL) +
+  labs(x = "Vecka", fill = "Typ av lokal") +
   theme_classic()
 plot_insectSR_2024
 ```
@@ -188,6 +195,12 @@ pollinator_OR_2024 = length(unique(pollinator_data_2024$Order_lt))
 
 print(pollinator_SR_2024)
 print(pollinator_OR_2024)
+```
+
+```{r list all pollinator species in 2024, include = TRUE}
+list_pollinators_2024 = list(unique(pollinator_data_2024$Species_sv))
+
+print(list_pollinators_2024)
 ```
 
 ```{r plotting pollinator data, per week}
