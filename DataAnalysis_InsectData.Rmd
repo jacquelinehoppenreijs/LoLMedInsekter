@@ -8,49 +8,134 @@ output: word_document
 # R Markdown
 Built with R version `r getRversion()`
 
-# Data description
-
-
 ```{r setting the scene, include = FALSE}
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
 
 library(pacman)
 p_load(readxl, tidyverse, plyr, dplyr, lattice, gridExtra, ggplot2, png, reshape2, colorblindcheck, lme4, emmeans, effectsize, MuMIn, performance, DHARMa, regclass, broom, vegan, patchwork, scales)
 
-#palette <- c("#104e8b", "#458b00", "#eead0e", "#9F2B68")
-#palette_check(palette)
-#palette_bivariate_plot(palette)
+palette <- c("#104e8b", "#458b00", "#eead0e", "#9F2B68")
+palette_check(palette)
+palette_bivariate_plot(palette)
 
 ```
 
+# Data description
+
 ```{r loading insect data, include = FALSE}
-insect_data_2024 <- read_excel("./Data/LoL_data_JH20241007.xlsx", sheet = "LoL_insectinfo_JH20240909")
+insect_data_2024 <- read_excel("./Data/LoL_data_JH20241008.xlsx", sheet = "LoL_insectinfo_JH20240909")
 insect_data_2024$Site <- as.factor(insect_data_2024$Site)
 insect_data_2024$Site_type <- as.factor(insect_data_2024$Site_type)
 insect_data_2024$Week <- as.factor(insect_data_2024$Week)
 insect_data_2024$Species_sv <- as.factor(insect_data_2024$Species_sv)
 insect_data_2024$Order_lt <- as.factor(insect_data_2024$Order_lt)
+insect_data_2024$Order_sv <- as.factor(insect_data_2024$Order_sv)
 insect_data_2024$`Pollinator?` <- as.factor(insect_data_2024$`Pollinator?`)
 insect_data_2024$Behaviour <- as.factor(insect_data_2024$Behaviour)
 
-str(insect_data_2024)
-
-insect_data_2024 <- subset(insect_data_2024, `Pollinator?` == "Yes")
-#insect_data_2024 <- subset(insect_data_2024, !(Behaviour == "Flying by"))
+insect_data_2024 <- insect_data_2024 %>% 
+  filter(Behaviour != "Flying by" | is.na(Behaviour))
 
 str(insect_data_2024)
+
+site_colors <- c("Sälg" = "goldenrod",      
+                   "Bruksgräsmatta" = "#9F2B68", 
+                   "Paradgräsmatta" = "#9F2B68", 
+                   "Älvkant" = "#104e8b",        
+                   "Ö_1" = "darkolivegreen",           
+                   "Ö_2" = "darkolivegreen",           
+                   "Ö_3" = "darkolivegreen",           
+                   "Ö_4" = "darkolivegreen")           
+
 ```
 
 ```{r build insect df}
-df_insects_2024 <- insect_data_2024 %>%
-  group_by(Site, Week) %>%
-  summarise(SR = count(Species_sv)) #‘sum’ not meaningful for factors
+df_insects_2024 <- ddply(insect_data_2024, ~ Week*Site_type*Site, summarise, 
+                         SR = length(unique(Species_sv)), 
+                         Abundance = length(Species_sv))
+
+df_insects_2024 <- df_insects_2024 %>%
+  mutate(Week = as.integer(as.character(Week)))
+
+df_insects_2024 <- df_insects_2024 %>% 
+  complete(Week = 18:34, Site_type = c("Sälg", "Gräsmatta", "Älvkant", "Ö"), Site = c("Sälg", "Bruksgräsmatta", "Paradgräsmatta", "Älvkant", "Ö_1", "Ö_2", "Ö_3", "Ö_4"), fill = list(SR = 0, Abundance = 0))
+
+df_insects_2024$Site_type <- factor(df_insects_2024$Site_type, levels = c("Sälg", "Gräsmatta", "Gräsmatta", "Älvkant", "Ö", "Ö", "Ö", "Ö"))
+
 str(df_insects_2024)
 ```
 
+```{r calculate total number of insect species and orders in 2024, include = TRUE}
+insect_SR_2024 = length(unique(insect_data_2024$Species_sv))
+insect_OR_2024 = length(unique(insect_data_2024$Order_lt))
 
-```{r plotting insect data, per week}
-insect_df <- ggplot(insect_data_2024, aes(x = Week, y = count)
+print(insect_SR_2024)
+print(insect_OR_2024)
 ```
 
+```{r calculate total number of insects in 2024, include = TRUE}
+insect_Abundance_2024 = sum(df_insects_2024$Abundance)
 
+print(insect_Abundance_2024)
+```
+
+```{r plotting insect data, per week}
+plot_insectAb_2024 <- ggplot(df_insects_2024, aes(x = as.factor(Week), y = Abundance, fill = Site)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  scale_y_continuous(name = "Antal insekter", limits = c(0, 50)) +
+  scale_fill_manual(values = site_colors) +
+  labs(x = "Vecka", fill = NULL) +
+  theme_classic()
+plot_insectAb_2024
+
+
+plot_insectSR_2024 <- ggplot(df_insects_2024, aes(x = as.factor(Week), y = SR, fill = Site)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  scale_y_continuous(name = "Artrikedom", limits = c(0, 12), breaks = c(2, 4, 6, 8, 10, 12)) +
+  scale_fill_manual(values = site_colors) +
+  labs(x = "Vecka", fill = NULL) +
+  theme_classic()
+plot_insectSR_2024
+```
+
+Subset for pollinators
+```{r pollinator subset}
+pollinator_data_2024 <- subset(insect_data_2024, `Pollinator?` == "Yes")
+
+df_pollinators_2024 <- ddply(pollinator_data_2024, ~ Week*Site_type*Site, summarise, 
+                             SR = length(unique(Species_sv)))
+
+df_pollinators_2024 <- df_pollinators_2024 %>%
+  mutate(Week = as.integer(as.character(Week)))
+
+df_pollinators_2024 <- df_pollinators_2024 %>% 
+  complete(Week = 18:34, Site_type = c("Sälg", "Gräsmatta", "Älvkant", "Ö"), Site = c("Sälg", "Bruksgräsmatta", "Paradgräsmatta", "Älvkant", "Ö_1", "Ö_2", "Ö_3", "Ö_4"), fill = list(SR = 0))
+
+df_pollinators_2024$Site_type <- factor(df_pollinators_2024$Site_type, levels = c("Sälg", "Gräsmatta", "Älvkant", "Ö"))
+
+str(df_pollinators_2024)
+```
+
+```{r calculate total number of pollinator species and orders in 2024, include = TRUE}
+pollinator_SR_2024 = length(unique(pollinator_data_2024$Species_sv))
+pollinator_OR_2024 = length(unique(pollinator_data_2024$Order_lt))
+
+print(pollinator_SR_2024)
+print(pollinator_OR_2024)
+```
+
+```{r plotting pollinator data, per week}
+plot_pollinators_2024 <- ggplot(df_pollinators_2024, aes(x = as.factor(Week), y = SR, fill = Site_type)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  scale_y_continuous(name = "Artrikedom pollinatörer", limits = c(0, 12), breaks = c(2, 4, 6, 8, 10, 12)) +
+  labs(x = "Vecka", fill = NULL) +
+  theme_classic()
+plot_pollinators_2024
+
+plot_pollinators_2024 <- ggplot(df_pollinators_2024, aes(x = as.factor(Week), y = SR, fill = Site_type)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  scale_y_continuous(name = "Artrikedom pollinatörer", limits = c(0, 12), breaks = c(2, 4, 6, 8, 10, 12)) +
+  labs(x = "Vecka", fill = NULL) +
+  theme_classic()
+plot_pollinators_2024
+```
