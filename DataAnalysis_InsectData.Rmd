@@ -112,7 +112,12 @@ site_colors <- c("Sälg" = "goldenrod",
                    "Ö_1" = "#458b00",           
                    "Ö_2" = "#458b00",           
                    "Ö_3" = "#458b00",           
-                   "Ö_4" = "#458b00")           
+                   "Ö_4" = "#458b00")       
+
+sitetype_colors <- c("Sälg" = "goldenrod",      
+                   "Gräsmatta" = "#9F2B68", 
+                   "Älvkant" = "#104e8b",        
+                   "Ö" = "#458b00")    
 
 ```
 
@@ -157,18 +162,59 @@ plot_insectAb_2024 <- ggplot(df_insects_2024, aes(x = as.factor(Week), y = Abund
   geom_bar(stat = "identity", position = "dodge") +
   scale_y_continuous(name = "Antal insekter", limits = c(0, 50)) +
   scale_fill_manual(values = site_colors) +
-  labs(x = "Vecka", fill = "Typ av lokal") +
-  theme_classic()
+  labs(x = "Vecka", fill = "Lokal") +
+  theme_classic() +
+    theme(strip.text = element_text(size = 14, face = "bold")) +
+    theme(axis.title = element_text(size = 16, face = "bold")) 
 plot_insectAb_2024
-
 
 plot_insectSR_2024 <- ggplot(df_insects_2024, aes(x = as.factor(Week), y = SR, fill = Site)) +
   geom_bar(stat = "identity", position = "dodge") +
   scale_y_continuous(name = "Artrikedom insekter", limits = c(0, 12), breaks = c(2, 4, 6, 8, 10, 12)) +
   scale_fill_manual(values = site_colors) +
-  labs(x = "Vecka", fill = "Typ av lokal") +
-  theme_classic()
+  labs(x = "Vecka", fill = "Lokal") +
+  theme_classic() +
+    theme(strip.text = element_text(size = 14, face = "bold")) +
+    theme(axis.title = element_text(size = 16, face = "bold")) 
 plot_insectSR_2024
+```
+
+```{r build aggregated insect df}
+df_insectsagg_2024 <- ddply(insect_data_2024, ~ Week*Site_type, summarise, 
+                         SR = length(unique(Species_sv)), 
+                         Abundance = length(Species_sv))
+
+df_insectsagg_2024 <- df_insectsagg_2024 %>%
+  mutate(Week = as.integer(as.character(Week)))
+
+df_insectsagg_2024 <- df_insectsagg_2024 %>% 
+  complete(Week = 18:34, Site_type = c("Sälg", "Gräsmatta", "Älvkant", "Ö"), fill = list(SR = 0, Abundance = 0))
+
+df_insectsagg_2024$Site_type <- factor(df_insectsagg_2024$Site_type, levels = c("Sälg", "Gräsmatta", "Älvkant", "Ö"))
+
+str(df_insectsagg_2024)
+```
+
+```{r plotting aggregated insect data, per week}
+plot_insectaggAb_2024 <- ggplot(df_insectsagg_2024, aes(x = as.factor(Week), y = Abundance, fill = Site_type)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  scale_y_continuous(name = "Antal insekter", limits = c(0, 100)) +
+  scale_fill_manual(values = sitetype_colors) +
+  labs(x = "Vecka", fill = "Lokal") +
+  theme_classic() +
+    theme(strip.text = element_text(size = 14, face = "bold")) +
+    theme(axis.title = element_text(size = 16, face = "bold")) 
+plot_insectaggAb_2024
+
+plot_insectaggSR_2024 <- ggplot(df_insectsagg_2024, aes(x = as.factor(Week), y = SR, fill = Site_type)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  scale_y_continuous(name = "Artrikedom insekter", limits = c(0, 15), breaks = c(2, 4, 6, 8, 10, 12,14)) +
+  scale_fill_manual(values = sitetype_colors) +
+  labs(x = "Vecka", fill = "Lokal") +
+  theme_classic() +
+    theme(strip.text = element_text(size = 14, face = "bold")) +
+    theme(axis.title = element_text(size = 16, face = "bold")) 
+plot_insectaggSR_2024
 ```
 
 ### Pollinator subset
