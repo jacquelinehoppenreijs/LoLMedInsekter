@@ -50,6 +50,9 @@ site_colors <- c("Bruksgräsmatta" = "#9F2B68",
                    "Ö_3" = "#458b00",           
                    "Ö_4" = "#458b00")           
 
+sitetype_colors <- c("Gräsmatta" = "#9F2B68", 
+                   "Älvkant" = "#104e8b",        
+                   "Ö" = "#458b00")   
 ```
 
 ```{r build plant df}
@@ -81,10 +84,41 @@ plot_plantSR_2024 <- ggplot(df_plants_2024, aes(x = as.factor(Week), y = SR, fil
   geom_bar(stat = "identity", position = "dodge") +
   scale_y_continuous(name = "Artrikedom (minus gräss och träd)", limits = c(0, 25), breaks = c(5, 10, 15, 20, 25)) +
   scale_fill_manual(values = site_colors, ) +
+  labs(x = "Vecka", fill = "Lokal") +
+  theme(legend.position = "bottom") + 
+  theme_classic() +
+    theme(strip.text = element_text(size = 14, face = "bold")) +
+    theme(axis.title = element_text(size = 16, face = "bold")) 
+plot_plantSR_2024
+```
+
+```{r build aggregated plant df}
+df_plantsagg_2024 <- ddply(plant_data_2024, ~ Week*Site_type, summarise, 
+                         SR = length(unique(Species_sv)))
+
+df_plantsagg_2024 <- df_plantsagg_2024 %>%
+  mutate(Week = as.integer(as.character(Week)))
+
+df_plantsagg_2024 <- df_plantsagg_2024 %>%
+  complete(Week = 18:34, nesting(Site_type), fill = list(SR = 0)) %>%
+  semi_join(valid_combinations, by = c("Site_type"))
+
+df_plantsagg_2024$Site_type <- factor(df_plantsagg_2024$Site_type, levels = c("Gräsmatta", "Älvkant", "Ö"))
+
+str(df_plantsagg_2024)
+```
+
+```{r plotting aggregated plant data, per week}
+plot_plantaggSR_2024 <- ggplot(df_plantsagg_2024, aes(x = as.factor(Week), y = SR, fill = Site_type)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  scale_y_continuous(name = "Artrikedom (minus gräss och träd)", limits = c(0, 25), breaks = c(5, 10, 15, 20, 25)) +
+  scale_fill_manual(values = sitetype_colors, ) +
   labs(x = "Vecka", fill = "Typ av lokal") +
   theme(legend.position = "bottom") + 
-  theme_classic()
-plot_plantSR_2024
+  theme_classic() +
+    theme(strip.text = element_text(size = 14, face = "bold")) +
+    theme(axis.title = element_text(size = 16, face = "bold")) 
+plot_plantaggSR_2024
 ```
 
 ## Insect data
@@ -200,7 +234,7 @@ plot_insectaggAb_2024 <- ggplot(df_insectsagg_2024, aes(x = as.factor(Week), y =
   geom_bar(stat = "identity", position = "dodge") +
   scale_y_continuous(name = "Antal insekter", limits = c(0, 100)) +
   scale_fill_manual(values = sitetype_colors) +
-  labs(x = "Vecka", fill = "Lokal") +
+  labs(x = "Vecka", fill = "Typ av lokal") +
   theme_classic() +
     theme(strip.text = element_text(size = 14, face = "bold")) +
     theme(axis.title = element_text(size = 16, face = "bold")) 
@@ -210,7 +244,7 @@ plot_insectaggSR_2024 <- ggplot(df_insectsagg_2024, aes(x = as.factor(Week), y =
   geom_bar(stat = "identity", position = "dodge") +
   scale_y_continuous(name = "Artrikedom insekter", limits = c(0, 15), breaks = c(2, 4, 6, 8, 10, 12,14)) +
   scale_fill_manual(values = sitetype_colors) +
-  labs(x = "Vecka", fill = "Lokal") +
+  labs(x = "Vecka", fill = "Typ av lokal") +
   theme_classic() +
     theme(strip.text = element_text(size = 14, face = "bold")) +
     theme(axis.title = element_text(size = 16, face = "bold")) 
