@@ -366,7 +366,8 @@ if(nrow(df_plants_2024) == nrow(df_insects_2024)) {
   df_combinedSRs <- df_plants_2024 %>%
     mutate(SR_plants = SR) %>%         # Create a new SR column for plants
     select(-SR) %>%                    # Remove the original SR column
-    mutate(SR_insects = df_insects_2024$SR)  # Add SR column from insects
+    mutate(SR_insects = df_insects_2024$SR, 
+           Abundance_insects = df_insects_2024$Abundance)  # Add SR column from insects
 } else {
   stop("Datasets have different number of rows!")
 }
