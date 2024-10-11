@@ -163,8 +163,13 @@ df_insects_2024 <- ddply(insect_data_2024, ~ Week*Site_type*Site, summarise,
 df_insects_2024 <- df_insects_2024 %>%
   mutate(Week = as.integer(as.character(Week)))
 
+valid_combinations <- data.frame(
+  Site_type = c("Sälg", "Gräsmatta", "Gräsmatta", "Älvkant", "Ö", "Ö", "Ö", "Ö"),
+  Site = c("Sälg", "Paradgräsmatta", "Bruksgräsmatta", "Älvkant", "Ö_1", "Ö_2", "Ö_3", "Ö_4"))
+
 df_insects_2024 <- df_insects_2024 %>% 
-  complete(Week = 18:34, Site_type = c("Sälg", "Gräsmatta", "Älvkant", "Ö"), Site = c("Sälg", "Bruksgräsmatta", "Paradgräsmatta", "Älvkant", "Ö_1", "Ö_2", "Ö_3", "Ö_4"), fill = list(SR = 0, Abundance = 0))
+  complete(Week = 18:34, Site_type = c("Sälg", "Gräsmatta", "Älvkant", "Ö"), Site = c("Sälg", "Bruksgräsmatta", "Paradgräsmatta", "Älvkant", "Ö_1", "Ö_2", "Ö_3", "Ö_4"), fill = list(SR = 0, Abundance = 0)) %>%
+  semi_join(valid_combinations, by = c("Site_type", "Site"))
 
 df_insects_2024$Site_type <- factor(df_insects_2024$Site_type, levels = c("Sälg", "Gräsmatta", "Gräsmatta", "Älvkant", "Ö", "Ö", "Ö", "Ö"))
 
@@ -263,7 +268,8 @@ df_pollinators_2024 <- df_pollinators_2024 %>%
   mutate(Week = as.integer(as.character(Week)))
 
 df_pollinators_2024 <- df_pollinators_2024 %>% 
-  complete(Week = 18:34, Site_type = c("Sälg", "Gräsmatta", "Älvkant", "Ö"), Site = c("Sälg", "Bruksgräsmatta", "Paradgräsmatta", "Älvkant", "Ö_1", "Ö_2", "Ö_3", "Ö_4"), fill = list(SR = 0, Abundance = 0))
+  complete(Week = 18:34, Site_type = c("Sälg", "Gräsmatta", "Älvkant", "Ö"), Site = c("Sälg", "Bruksgräsmatta", "Paradgräsmatta", "Älvkant", "Ö_1", "Ö_2", "Ö_3", "Ö_4"), fill = list(SR = 0, Abundance = 0)) %>%
+  semi_join(valid_combinations, by = c("Site_type", "Site"))
 
 df_pollinators_2024$Site_type <- factor(df_pollinators_2024$Site_type, levels = c("Sälg", "Gräsmatta", "Älvkant", "Ö"))
 
@@ -348,8 +354,47 @@ plot_pollinatoraggSR_2024
 ## Combining plant and insect data
 
 ```{r plotting insect SR over plant SR}
+str(df_plants_2024)
+str(df_insects_2024)
+
+df_insects_2024 <- df_insects_2024 %>%
+  filter(Site_type != "Sälg") %>%
+  droplevels()
 
 
+if(nrow(df_plants_2024) == nrow(df_insects_2024)) {
+  df_combinedSRs <- df_plants_2024 %>%
+    mutate(SR_plants = SR) %>%         # Create a new SR column for plants
+    select(-SR) %>%                    # Remove the original SR column
+    mutate(SR_insects = df_insects_2024$SR)  # Add SR column from insects
+} else {
+  stop("Datasets have different number of rows!")
+}
+str(df_combinedSRs)
+
+sitetype_colors <- c("Gräsmatta" = "#9F2B68", 
+                   "Älvkant" = "#104e8b",        
+                   "Ö" = "#458b00")   
+
+plot_combinedSRs_2024 <- ggplot(df_combinedSRs, aes(x = SR_plants, y = SR_insects, col = Site_type)) + 
+  geom_point(size = 3) +
+  scale_color_manual(values = sitetype_colors) +
+  labs(x = "Artrikedom växter", y = "Artrikedom insekter", col = "Typ av lokal") +
+  theme_classic() +
+    theme(strip.text = element_text(size = 14, face = "bold")) +
+    theme(axis.title = element_text(size = 16, face = "bold")) 
+plot_combinedSRs_2024
+
+df_combinedSRs <- cbind(df_combinedSRs, df_insects_2024$Abundance)
+
+plot_combined_2024 <- ggplot(df_combinedSRs, aes(x = SR_plants, y = `df_insects_2024$Abundance`, col = Site_type)) + 
+  geom_point(size = 3) +
+  scale_color_manual(values = sitetype_colors) +
+  labs(x = "Artrikedom växter", y = "Antal insekter", col = "Typ av lokal") +
+  theme_classic() +
+    theme(strip.text = element_text(size = 14, face = "bold")) +
+    theme(axis.title = element_text(size = 16, face = "bold")) 
+plot_combined_2024
 
 ```
 
