@@ -256,13 +256,14 @@ plot_insectaggSR_2024
 pollinator_data_2024 <- subset(insect_data_2024, `Pollinator?` == "Yes")
 
 df_pollinators_2024 <- ddply(pollinator_data_2024, ~ Week*Site_type*Site, summarise, 
-                             SR = length(unique(Species_sv)))
+                         SR = length(unique(Species_sv)), 
+                         Abundance = length(Species_sv))
 
 df_pollinators_2024 <- df_pollinators_2024 %>%
   mutate(Week = as.integer(as.character(Week)))
 
 df_pollinators_2024 <- df_pollinators_2024 %>% 
-  complete(Week = 18:34, Site_type = c("Sälg", "Gräsmatta", "Älvkant", "Ö"), Site = c("Sälg", "Bruksgräsmatta", "Paradgräsmatta", "Älvkant", "Ö_1", "Ö_2", "Ö_3", "Ö_4"), fill = list(SR = 0))
+  complete(Week = 18:34, Site_type = c("Sälg", "Gräsmatta", "Älvkant", "Ö"), Site = c("Sälg", "Bruksgräsmatta", "Paradgräsmatta", "Älvkant", "Ö_1", "Ö_2", "Ö_3", "Ö_4"), fill = list(SR = 0, Abundance = 0))
 
 df_pollinators_2024$Site_type <- factor(df_pollinators_2024$Site_type, levels = c("Sälg", "Gräsmatta", "Älvkant", "Ö"))
 
@@ -284,18 +285,71 @@ print(list_pollinators_2024)
 ```
 
 ```{r plotting pollinator data, per week}
-plot_pollinators_2024 <- ggplot(df_pollinators_2024, aes(x = as.factor(Week), y = SR, fill = Site_type)) +
+plot_pollinatorAb_2024 <- ggplot(df_pollinators_2024, aes(x = as.factor(Week), y = Abundance, fill = Site)) +
   geom_bar(stat = "identity", position = "dodge") +
-  scale_y_continuous(name = "Artrikedom pollinatörer", limits = c(0, 12), breaks = c(2, 4, 6, 8, 10, 12)) +
-  labs(x = "Vecka", fill = NULL) +
-  theme_classic()
-plot_pollinators_2024
+  scale_y_continuous(name = "Antal pollinatörer", limits = c(0, 60)) +
+  scale_fill_manual(values = site_colors) +
+  labs(x = "Vecka", fill = "Lokal") +
+  theme_classic() +
+    theme(strip.text = element_text(size = 14, face = "bold")) +
+    theme(axis.title = element_text(size = 16, face = "bold")) 
+plot_pollinatorAb_2024
 
-plot_pollinators_2024 <- ggplot(df_pollinators_2024, aes(x = as.factor(Week), y = SR, fill = Site_type)) +
+plot_pollinatorSR_2024 <- ggplot(df_pollinators_2024, aes(x = as.factor(Week), y = SR, fill = Site)) +
   geom_bar(stat = "identity", position = "dodge") +
   scale_y_continuous(name = "Artrikedom pollinatörer", limits = c(0, 12), breaks = c(2, 4, 6, 8, 10, 12)) +
-  labs(x = "Vecka", fill = NULL) +
-  theme_classic()
-plot_pollinators_2024
+    scale_fill_manual(values = site_colors) +
+  labs(x = "Vecka", fill = "Lokal") +
+  theme_classic() +
+    theme(strip.text = element_text(size = 14, face = "bold")) +
+    theme(axis.title = element_text(size = 16, face = "bold")) 
+plot_pollinatorSR_2024
+
+```
+
+```{r build aggregated pollinator df}
+df_pollinatorsagg_2024 <- ddply(pollinator_data_2024, ~ Week*Site_type, summarise, 
+                         SR = length(unique(Species_sv)), 
+                         Abundance = length(Species_sv))
+
+df_pollinatorsagg_2024 <- df_pollinatorsagg_2024 %>%
+  mutate(Week = as.integer(as.character(Week)))
+
+df_pollinatorsagg_2024 <- df_pollinatorsagg_2024 %>% 
+  complete(Week = 18:34, Site_type = c("Sälg", "Gräsmatta", "Älvkant", "Ö"), fill = list(SR = 0, Abundance = 0))
+
+df_pollinatorsagg_2024$Site_type <- factor(df_pollinatorsagg_2024$Site_type, levels = c("Sälg", "Gräsmatta", "Älvkant", "Ö"))
+
+str(df_pollinatorsagg_2024)
+```
+
+```{r plotting aggregated insect data, per week}
+plot_pollinatoraggAb_2024 <- ggplot(df_pollinatorsagg_2024, aes(x = as.factor(Week), y = Abundance, fill = Site_type)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  scale_y_continuous(name = "Antal pollinatörer", limits = c(0, 100)) +
+  scale_fill_manual(values = sitetype_colors) +
+  labs(x = "Vecka", fill = "Typ av lokal") +
+  theme_classic() +
+    theme(strip.text = element_text(size = 14, face = "bold")) +
+    theme(axis.title = element_text(size = 16, face = "bold")) 
+plot_pollinatoraggAb_2024
+
+plot_pollinatoraggSR_2024 <- ggplot(df_pollinatorsagg_2024, aes(x = as.factor(Week), y = SR, fill = Site_type)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  scale_y_continuous(name = "Artrikedom pollinatörer", limits = c(0, 11), breaks = c(2, 4, 6, 8, 10)) +
+  scale_fill_manual(values = sitetype_colors) +
+  labs(x = "Vecka", fill = "Typ av lokal") +
+  theme_classic() +
+    theme(strip.text = element_text(size = 14, face = "bold")) +
+    theme(axis.title = element_text(size = 16, face = "bold")) 
+plot_pollinatoraggSR_2024
+```
+
+## Combining plant and insect data
+
+```{r plotting insect SR over plant SR}
+
+
+
 ```
 
