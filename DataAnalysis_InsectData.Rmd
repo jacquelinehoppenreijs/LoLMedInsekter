@@ -25,7 +25,7 @@ palette_bivariate_plot(palette)
 ## Vegetation data
 
 ```{r loading plant data, include = FALSE}
-plant_data_2024 <- read_excel("./Data/LoL_data_JH20241008.xlsx", sheet = "LoL_veginfo_JH20240909")
+plant_data_2024 <- read_excel("./Data/LoL_data_JH20241031.xlsx", sheet = "LoL_veginfo")
 plant_data_2024$Site <- as.factor(plant_data_2024$Site)
 plant_data_2024$Site_type <- as.factor(plant_data_2024$Site_type)
 plant_data_2024$Week <- as.factor(plant_data_2024$Week)
@@ -124,7 +124,7 @@ plot_plantaggSR_2024
 ## Insect data
 
 ```{r loading insect data, include = FALSE}
-insect_data_2024 <- read_excel("./Data/LoL_data_JH20241008.xlsx", sheet = "LoL_insectinfo_JH20240909")
+insect_data_2024 <- read_excel("./Data/LoL_data_JH20241031.xlsx", sheet = "LoL_insectinfo")
 insect_data_2024$Site <- as.factor(insect_data_2024$Site)
 insect_data_2024$Site_type <- as.factor(insect_data_2024$Site_type)
 insect_data_2024$Week <- as.factor(insect_data_2024$Week)
@@ -171,7 +171,7 @@ df_insects_2024 <- df_insects_2024 %>%
   complete(Week = 18:34, Site_type = c("Sälg", "Gräsmatta", "Älvkant", "Ö"), Site = c("Sälg", "Bruksgräsmatta", "Paradgräsmatta", "Älvkant", "Ö_1", "Ö_2", "Ö_3", "Ö_4"), fill = list(SR = 0, Abundance = 0)) %>%
   semi_join(valid_combinations, by = c("Site_type", "Site"))
 
-df_insects_2024$Site_type <- factor(df_insects_2024$Site_type, levels = c("Sälg", "Gräsmatta", "Gräsmatta", "Älvkant", "Ö", "Ö", "Ö", "Ö"))
+df_insects_2024$Site_type <- factor(df_insects_2024$Site_type, levels = c("Sälg", "Gräsmatta", "Älvkant", "Ö"))
 
 str(df_insects_2024)
 ```
@@ -199,7 +199,7 @@ print(list_insects_2024)
 ```{r plotting insect data, per week}
 plot_insectAb_2024 <- ggplot(df_insects_2024, aes(x = as.factor(Week), y = Abundance, fill = Site)) +
   geom_bar(stat = "identity", position = "dodge") +
-  scale_y_continuous(name = "Antal insekter", limits = c(0, 50)) +
+  scale_y_continuous(name = "Antal insekter", limits = c(0, 70)) +
   scale_fill_manual(values = site_colors) +
   labs(x = "Vecka", fill = "Lokal") +
   theme_classic() +
