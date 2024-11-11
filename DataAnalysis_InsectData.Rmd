@@ -129,6 +129,7 @@ insect_data_2024$Site <- as.factor(insect_data_2024$Site)
 insect_data_2024$Site_type <- as.factor(insect_data_2024$Site_type)
 insect_data_2024$Week <- as.factor(insect_data_2024$Week)
 insect_data_2024$Species_sv <- as.factor(insect_data_2024$Species_sv)
+insect_data_2024$Species_lt <- as.factor(insect_data_2024$Species_lt)
 insect_data_2024$Order_lt <- as.factor(insect_data_2024$Order_lt)
 insect_data_2024$Order_sv <- as.factor(insect_data_2024$Order_sv)
 insect_data_2024$`Pollinator?` <- as.factor(insect_data_2024$`Pollinator?`)
@@ -255,6 +256,85 @@ plot_insectaggSR_2024 <- ggplot(df_insectsagg_2024, aes(x = as.factor(Week), y =
     theme(axis.title = element_text(size = 16, face = "bold")) 
 plot_insectaggSR_2024
 ```
+
+# Species rank curves
+```{r specaccum}
+insect_data_2024 <- insect_data_2024 %>%  
+  filter(!is.na(Species_lt)) %>% # Remove NAs for species names in Latin
+  as.data.frame()
+
+df_insectspecies <- ddply(insect_data_2024, ~ Site_type*Species_lt, summarise, # Calculate Abundance of each species for each habitat type
+                         Abundance = as.numeric(length(Species_lt)))
+ 
+df_insectranks <- df_insectspecies %>%
+    group_by(Site_type) %>%  # Group by habitat type
+    #arrange(Site_type, desc(Abundance)) %>%  # Sort species by abundance within each habitat
+    mutate(Site_type, Abundance_rank = dense_rank(desc(Abundance))) %>%  # Rank species within each habitat
+    ungroup()  # Remove grouping for a clean output
+
+df_insectranks <- df_insectspecies %>%
+    group_by(Site_type) %>%  # Group by habitat type
+    arrange(Site_type, desc(Abundance)) %>%  # Arrange by Site_type and abundance within each group
+    mutate(Abundance_rank = dense_rank(desc(Abundance))) %>%  # Rank species within each habitat based on abundance
+    ungroup()
+
+# Function to add rank based on abundance
+calculate_abundance_rank <- function(df_insectspecies) {
+  df_insectspecies %>%
+    arrange(desc(Abundance)) %>%
+    mutate(Abundance_rank = dense_rank(desc(Abundance)))
+}
+
+# Function to merge abundance and rank back into the original dataset
+add_abundance_and_rank <- function(df, abundance_df) {
+  left_join(df, abundance_df, by = "species")
+}
+
+# Main function to process the insect data
+process_insect_data <- function(filepath, sheet = 1) {
+  # Step 1: Load data
+  df <- load_data(filepath, sheet)
+  
+  # Step 2: Calculate abundance per species
+  abundance_df <- calculate_abundance(df)
+  
+  # Step 3: Calculate abundance rank
+  abundance_df <- calculate_abundance_rank(abundance_df)
+  
+  # Step 4: Merge back with the original data
+  final_df <- add_abundance_and_rank(df, abundance_df)
+  
+  return(final_df)
+}
+
+# Example usage
+filepath <- "path/to/your/insect_observations.xlsx"  # Update this with your actual file path
+final_dataset <- process_insect_data(filepath)
+print(final_dataset)
+
+# Function to generate the species-rank curve
+species_rank_curve <- function(df) {
+  # Ensure data is ordered by rank
+  df <- df %>%
+    arrange(abundance_rank)
+  
+  # Plot species-rank curve
+  ggplot(df, aes(x = abundance_rank, y = abundance)) +
+    geom_line(color = "blue") +
+    geom_point(color = "red", size = 2) +
+    scale_x_continuous(breaks = 1:nrow(df)) +
+    labs(
+      title = "Species-Rank Abundance Curve",
+      x = "Species Rank",
+      y = "Abundance"
+    ) +
+    theme_minimal()
+}
+
+# Assuming `final_dataset` from the previous step contains abundance and rank
+species_rank_curve(final_dataset)
+```
+
 
 ### Pollinator subset
 ```{r pollinator subset}
