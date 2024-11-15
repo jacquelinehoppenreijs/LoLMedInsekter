@@ -5,24 +5,48 @@ date: "`r Sys.Date()`"
 bibliography: references.bib
 output: word_document
 ---
-# R Markdown
-Built with R version `r getRversion()`
 
 ```{r setting the scene, include = FALSE}
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
 
+install.packages("pacman")
 library(pacman)
-p_load(readxl, tidyverse, plyr, dplyr, lattice, gridExtra, ggplot2, png, reshape2, colorblindcheck, lme4, emmeans, effectsize, MuMIn, performance, DHARMa, regclass, broom, vegan, patchwork, scales)
+p_load(readxl, tidyverse, plyr, dplyr, lattice, ggplot2, png, colorblindcheck, broom, vegan, patchwork, scales)
 
-palette <- c("#104e8b", "#458b00", "#eead0e", "#9F2B68")
+# Check whether the used colours are colourblindness-friendly
+palette <- c("#104e8b", "#458b00", "#eead0e", "#9F2B68") 
 palette_check(palette)
 palette_bivariate_plot(palette)
 
+#Check which packages and versions are included
+package_versions <- function(packages=NULL, base=FALSE, sort=FALSE) {
+    if (is.null(packages))
+        packages <- names(sessionInfo()$otherPkgs)
+    if (base)
+        packages <- c("base", packages)
+    if (sort)
+        packages <- sort(packages)
+    if (!is.null(packages)) {
+        tmp <- data.frame(sapply(sapply(packages, packageVersion, simplify=FALSE), as.character))
+        colnames(tmp) <- "version"
+        data.frame(package=rownames(tmp), version=tmp[1], row.names=NULL)
+    }
+}
 ```
 
-# Data description
+# File description
+This Rmarkdown document can be used to analyse plant and insect data, and is tailored for use in the FORMAS project "Lära och Leva med Insekter", led by Peter Lampert (Karlstad University). He can be contacted at peter.lampert@kau.se. The document is written by Jacqueline Hoppenreijs (jacquelinehthoppenreijs@gmail.com).
 
-## Vegetation data
+# Software specifications
+Built with R version `r getRversion()`. 
+
+Used packages + versions: `package_versions()`.
+
+# Data description
+The data used in this document is collected in 2024, and describes the vegetation and occurrence of insects in four habitat types: - Sälg (1st)\ - Älvkant (1st)\ - Ö (4st)\ - Gräsmatta (1st bruksgräsmatta and 1st paradgräsmatta). Data is analysed on the level of vegetation, insects and pollinators.
+
+
+## Vegetation
 
 ```{r loading plant data, include = FALSE}
 plant_data_2024 <- read_excel("./Data/LoL_data_JH20241031.xlsx", sheet = "LoL_veginfo")
@@ -31,16 +55,13 @@ plant_data_2024$Site_type <- as.factor(plant_data_2024$Site_type)
 plant_data_2024$Week <- as.factor(plant_data_2024$Week)
 plant_data_2024$Species_sv <- as.factor(plant_data_2024$Species_sv)
 plant_data_2024$Family_lt <- as.factor(plant_data_2024$Family_lt)
-#plant_data_2024$Family_sv <- as.factor(plant_data_2024$Family_sv)
 plant_data_2024$Type <- as.factor(plant_data_2024$Type)
 
-plant_data_2024 <- plant_data_2024 %>% 
-  filter(Type != "Grass" | is.na(Type))
-
-plant_data_2024 <- plant_data_2024 %>% 
+plant_data_2024 <- plant_data_2024 %>% # Exclude plant species that are grasses or trees
+  filter(Type != "Grass" | is.na(Type)) %>% 
   filter(Type != "Träd" | is.na(Type))
 
-str(plant_data_2024)
+str(plant_data_2024) # See what the dataset looks like
 
 site_colors <- c("Bruksgräsmatta" = "#9F2B68", 
                    "Paradgräsmatta" = "#9F2B68", 
@@ -55,7 +76,7 @@ sitetype_colors <- c("Gräsmatta" = "#9F2B68",
                    "Ö" = "#458b00")   
 ```
 
-```{r build plant df}
+```{r build plant df, include = FALSE}
 df_plants_2024 <- ddply(plant_data_2024, ~ Week*Site_type*Site, summarise, 
                          SR = length(unique(Species_sv)))
 
@@ -70,16 +91,18 @@ df_plants_2024 <- df_plants_2024 %>%
   complete(Week = 18:34, nesting(Site_type, Site), fill = list(SR = 0)) %>%
   semi_join(valid_combinations, by = c("Site_type", "Site"))
 
-str(df_plants_2024)
+str(df_plants_2024) # See what the dataset looks like
 ```
 
-```{r calculate total number of plant species and families in 2024, include = TRUE}
-plant_SR_2024 = length(unique(plant_data_2024$Species_sv))
+```{r calculate total number of plant species in 2024, include = FALSE}
+plant_SR_2024 = length(unique(plant_data_2024$Species_sv)) # Calculate 
 
 print(plant_SR_2024)
 ```
 
-```{r plotting plant data, per week}
+The total number of plant species in the dataset is `print(plant_SR_2024)`. They are distributed over the different sites as follows:
+
+```{r plotting plant data, per week, include = TRUE}
 plot_plantSR_2024 <- ggplot(df_plants_2024, aes(x = as.factor(Week), y = SR, fill = Site)) +
   geom_bar(stat = "identity", position = "dodge") +
   scale_y_continuous(name = "Artrikedom (minus gräss och träd)", limits = c(0, 25), breaks = c(5, 10, 15, 20, 25)) +
@@ -281,7 +304,8 @@ str(df_insectspecies)
 speciesrankplot_2024 <- ggplot(df_insectspecies, aes(x = Rank, y = Abundance, color = Site_type, group = Site_type)) +
   geom_line(linewidth = 1) +  # Draw lines for each habitat
   geom_point(size = 2) + # Optional: Add points for each species
-  scale_y_log10() +      # Log-scale for abundance (optional, enhances visibility for large differences)
+  scale_x_continuous(breaks = seq(0, 15, by = 2)) +
+  scale_y_continuous() +      # Log-scale for abundance (optional, enhances visibility for large differences)
   labs(title = "Species-Rank Curves by Habitat Type", x = "Species Rank", y = "Abundance", color = "Habitat Type") +
   theme_minimal() +       # Clean theme
   theme(legend.position = "right",
