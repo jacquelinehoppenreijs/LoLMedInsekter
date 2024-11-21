@@ -1,0 +1,54 @@
+---
+title: "SPACIC manuscript"
+author: "JacquelineHoppenreijs"
+date: "`r Sys.Date()`"
+bibliography: references.bib
+output: word_document
+---
+
+```{r setting the scene, include = FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+
+install.packages("pacman")
+library(pacman)
+p_load(readxl, tidyverse, plyr, dplyr, lattice, ggplot2, png, colorblindcheck, broom, vegan, patchwork, scales)
+
+# Check whether the used colours are colourblindness-friendly
+palette <- c("#104e8b", "#458b00", "#eead0e", "#9F2B68") 
+palette_check(palette)
+palette_bivariate_plot(palette)
+```
+
+```{r loading data, include = FALSE}
+schooldata <- read_excel("./SPACIC/FullData_JH20241120.xlsx", sheet = "RepeatedMeasures")
+schooldata$School <- as.factor(schooldata$School)
+schooldata$Treatment <- as.factor(schooldata$Treatment)
+
+str(schooldata)
+
+schooldata$School_ordered = factor(schooldata$School, levels=c("NC", "ST","IC", "JM", "OZ"))
+```
+
+```{r visualising full SPACIC, include = FALSE}
+SPACIC_B_plot <- ggplot(schooldata, aes(x = Before_Full_SPACIP_mean, fill = Treatment)) +
+  facet_grid( School_ordered ~.) +
+  geom_histogram(binwidth = 0.2) + 
+  scale_x_continuous("Mean SPACIC score") +
+  scale_y_continuous("Number of pupils", limits = c(0, 9), breaks = c(0, 2, 4, 6, 8)) +
+  theme_classic() +
+  theme(strip.text = element_blank()) +
+  guides(fill = FALSE)  
+
+SPACIC_A_plot <- ggplot(schooldata, aes(x = After_Full_SPACIP_mean, fill = Treatment)) +
+  facet_grid( School_ordered ~.) +
+  geom_histogram(binwidth = 0.2) + 
+  scale_x_continuous("Mean SPACIC score") +
+  scale_y_continuous("", limits = c(0, 9), breaks = c(0, 2, 4, 6, 8)) +
+  theme_classic()
+```
+
+```{r full SPACIC full picture, include = TRUE}
+SPACIC_plots <- SPACIC_B_plot + SPACIC_A_plot + plot_layout(nrow = 1)
+SPACIC_plots
+```
+
