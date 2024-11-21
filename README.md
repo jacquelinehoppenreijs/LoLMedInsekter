@@ -8,9 +8,8 @@ Project documents:
 - Rmarkdown file with code for data analyses, visualisation and interpretation
 
 Instructions for using Rmarkdown
-- Download R from https://cran.r-project.org/bin/windows/base/ and install
-- Download RStudio from https://posit.co/products/open-source/rstudio/ and install
-- Download DataAnalysis_LoLMedInsekter.Rmd from Github and open in Rstudio
+- Download R and Rstudio using the instructions on https://rstudio-education.github.io/hopr/starting.html
+- Download DataAnalysis_LoLMedInsekter.Rmd from Github (https://github.com/jacquelinehoppenreijs/LoLMedInsekter) and open in Rstudio
 
 
 LoLMedInsekter.rmd is an Rmarkdown document. This type of document integrates code and text really nicely by alternating between text and chunks of code. 
