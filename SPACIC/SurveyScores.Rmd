@@ -45,10 +45,14 @@ SPACIC_A_plot <- ggplot(schooldata, aes(x = After_Full_SPACIP_mean, fill = Treat
   scale_x_continuous("Mean SPACIC score") +
   scale_y_continuous("", limits = c(0, 9), breaks = c(0, 2, 4, 6, 8)) +
   theme_classic()
+
+SPACIC_plots <- SPACIC_B_plot + SPACIC_A_plot + plot_layout(nrow = 1)
+
+ggsave(filename = "SPACIC_plots_20241121.png", 
+       plot = SPACIC_plots, path = "SPACIC")
 ```
 
 ```{r full SPACIC full picture, include = TRUE}
-SPACIC_plots <- SPACIC_B_plot + SPACIC_A_plot + plot_layout(nrow = 1)
 SPACIC_plots
 ```
 
