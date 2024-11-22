@@ -26,14 +26,20 @@ schooldata$Treatment <- as.factor(schooldata$Treatment)
 
 str(schooldata)
 
+control_data <- subset(schooldata, Treatment == "Control")
+intervention_data <- subset(schooldata, Treatment == "Intervention")
+
 schooldata$School_ordered = factor(schooldata$School, levels=c("NC", "ST","IC", "JM", "OZ"))
 ```
+
+# Likert scale distributions
+## SPACIC
 
 ```{r visualising full SPACIC, include = FALSE}
 SPACIC_B_plot <- ggplot(schooldata, aes(x = Before_Full_SPACIP_mean, fill = Treatment)) +
   facet_grid( School_ordered ~.) +
   geom_histogram(binwidth = 0.2) + 
-  scale_x_continuous("Mean SPACIC score") +
+  scale_x_continuous("Mean SPACIC before") +
   scale_y_continuous("Number of pupils", limits = c(0, 9), breaks = c(0, 2, 4, 6, 8)) +
   theme_classic() +
   theme(strip.text = element_blank()) +
@@ -42,13 +48,13 @@ SPACIC_B_plot <- ggplot(schooldata, aes(x = Before_Full_SPACIP_mean, fill = Trea
 SPACIC_A_plot <- ggplot(schooldata, aes(x = After_Full_SPACIP_mean, fill = Treatment)) +
   facet_grid( School_ordered ~.) +
   geom_histogram(binwidth = 0.2) + 
-  scale_x_continuous("Mean SPACIC score") +
+  scale_x_continuous("Mean SPACIC after") +
   scale_y_continuous("", limits = c(0, 9), breaks = c(0, 2, 4, 6, 8)) +
   theme_classic()
 
 SPACIC_plots <- SPACIC_B_plot + SPACIC_A_plot + plot_layout(nrow = 1)
 
-ggsave(filename = "SPACIC_plots_20241121.png", 
+ggsave(filename = "SPACIC_plots_20241122.png", 
        plot = SPACIC_plots, path = "SPACIC")
 ```
 
@@ -56,3 +62,245 @@ ggsave(filename = "SPACIC_plots_20241121.png",
 SPACIC_plots
 ```
 
+## K nowledge
+```{r visualising full K, include = FALSE}
+Kfull_B_plot <- ggplot(schooldata, aes(x = Before_K_mean, fill = Treatment)) +
+  facet_grid( School_ordered ~.) +
+  geom_histogram(binwidth = 0.2) + 
+  scale_x_continuous("Mean K before") +
+  scale_y_continuous("Number of pupils", limits = c(0, 9), breaks = c(0, 2, 4, 6, 8)) +
+  theme_classic() +
+  theme(strip.text = element_blank()) +
+  guides(fill = FALSE)  
+
+Kfull_A_plot <- ggplot(schooldata, aes(x = After_K_mean, fill = Treatment)) +
+  facet_grid( School_ordered ~.) +
+  geom_histogram(binwidth = 0.2) + 
+  scale_x_continuous("Mean K after") +
+  scale_y_continuous("", limits = c(0, 9), breaks = c(0, 2, 4, 6, 8)) +
+  theme_classic()
+
+Kfull_plots <- Kfull_B_plot + Kfull_A_plot + plot_layout(nrow = 1)
+
+ggsave(filename = "Kfull_plots_20241122.png", 
+       plot = Kfull_plots, path = "SPACIC")
+```
+
+```{r full K full picture, include = TRUE}
+Kfull_plots
+```
+
+## C onfidence
+```{r visualising full C, include = FALSE}
+Cfull_B_plot <- ggplot(schooldata, aes(x = Before_C_mean, fill = Treatment)) +
+  facet_grid( School_ordered ~.) +
+  geom_histogram(binwidth = 0.2) + 
+  scale_x_continuous("Mean C before") +
+  scale_y_continuous("Number of pupils", limits = c(0, 9), breaks = c(0, 2, 4, 6, 8)) +
+  theme_classic() +
+  theme(strip.text = element_blank()) +
+  guides(fill = FALSE)  
+
+Cfull_A_plot <- ggplot(schooldata, aes(x = After_C_mean, fill = Treatment)) +
+  facet_grid( School_ordered ~.) +
+  geom_histogram(binwidth = 0.2) + 
+  scale_x_continuous("Mean C after") +
+  scale_y_continuous("", limits = c(0, 9), breaks = c(0, 2, 4, 6, 8)) +
+  theme_classic()
+
+Cfull_plots <- Cfull_B_plot + Cfull_A_plot + plot_layout(nrow = 1)
+
+ggsave(filename = "Cfull_plots_20241122.png", 
+       plot = Cfull_plots, path = "SPACIC")
+```
+
+```{r full C full picture, include = TRUE}
+Cfull_plots
+```
+
+## W illingness
+```{r visualising full C, include = FALSE}
+Wfull_B_plot <- ggplot(schooldata, aes(x = Before_W_mean, fill = Treatment)) +
+  facet_grid(School_ordered ~.) +
+  geom_histogram(binwidth = 0.2) + 
+  scale_x_continuous("Mean W before") +
+  scale_y_continuous("Number of pupils", limits = c(0, 9), breaks = c(0, 2, 4, 6, 8)) +
+  theme_classic() +
+  theme(strip.text = element_blank()) +
+  guides(fill = FALSE)  
+
+Wfull_A_plot <- ggplot(schooldata, aes(x = After_W_mean, fill = Treatment)) +
+  facet_grid(School_ordered ~.) +
+  geom_histogram(binwidth = 0.2) + 
+  scale_x_continuous("Mean W after") +
+  scale_y_continuous("", limits = c(0, 9), breaks = c(0, 2, 4, 6, 8)) +
+  theme_classic()
+
+Wfull_plots <- Wfull_B_plot + Wfull_A_plot + plot_layout(nrow = 1)
+
+ggsave(filename = "Wfull_plots_20241122.png", 
+       plot = Wfull_plots, path = "SPACIC")
+```
+
+```{r full C full picture, include = TRUE}
+Wfull_plots
+```
+
+# SPACIC, K, C and W scores
+## SPACIC
+
+```{r loading more data, include = FALSE}
+scoredata <- read_excel("./SPACIC/FullData_JH20241122.xlsx", sheet = "SubsetTidy")
+scoredata$School <- as.factor(scoredata$School)
+scoredata$Treatment <- as.factor(scoredata$Treatment)
+scoredata$Timing <- as.factor(scoredata$Timing)
+
+str(scoredata)
+
+scoredata_b <- subset(scoredata, Timing == "Pre-Test")
+scoredata_a <- subset(scoredata, Timing == "Post-Test")
+
+control_data_b <- subset(scoredata_b, Treatment == "Control")
+intervention_data_b <- subset(scoredata_b, Treatment == "Intervention")
+
+control_data_a <- subset(scoredata_a, Treatment == "Control")
+intervention_data_a <- subset(scoredata_a, Treatment == "Intervention")
+
+scoredata$Timing_ordered = factor(scoredata$Timing, levels=c("Pre-Test", "Post-Test"))
+
+
+```
+
+```{r visualising full SPACIC, include = FALSE}
+meanSPACIC_b_Control <- mean(control_data_b$Full_SPACIP_mean)
+seSPACIC_b_Control <- sd(control_data_b$Full_SPACIP_mean)/sqrt(length(control_data_b$Full_SPACIP_mean))
+
+meanSPACIC_b_Intervention <- mean(intervention_data_b$Full_SPACIP_mean)
+seSPACIC_b_Intervention <- sd(intervention_data_b$Full_SPACIP_mean)/sqrt(length(intervention_data_b$Full_SPACIP_mean))
+
+meanSPACIC_a_Control <- mean(control_data_a$Full_SPACIP_mean)
+seSPACIC_a_Control <- sd(control_data_a$Full_SPACIP_mean)/sqrt(length(control_data_a$Full_SPACIP_mean))
+
+meanSPACIC_a_Intervention <- mean(intervention_data_a$Full_SPACIP_mean)
+seSPACIC_a_Intervention <- sd(intervention_data_a$Full_SPACIP_mean)/sqrt(length(intervention_data_a$Full_SPACIP_mean))
+
+SPACIC_data <- data.frame(
+  Group = rep(c("Control", "Intervention"), each = 2),
+  Moment = rep(c("Pre-Test", "Post-Test"), times = 2),
+  Mean = c(meanSPACIC_b_Control, meanSPACIC_a_Control, 
+           meanSPACIC_b_Intervention, meanSPACIC_a_Intervention),
+  SE = c(seSPACIC_b_Control, seSPACIC_a_Control, 
+         seSPACIC_b_Intervention, seSPACIC_a_Intervention)
+)
+
+SPACIC_data$Moment = factor(SPACIC_data$Moment, levels=c("Pre-Test", "Post-Test"))
+SPACIC_data$Group <- factor(SPACIC_data$Group, levels = c("Control", "Intervention"))
+
+SPACIC_plot <- ggplot(SPACIC_data, aes(x = Moment, y = Mean, group = Group)) +
+  geom_line(aes(color = Group),size = 1.2) + # Line connecting the points
+  geom_point(aes(color = Group),size = 4) + # Points for means
+  geom_errorbar(aes(ymin = Mean - SE, ymax = Mean + SE, color = Group), width = 0.2, size = 1.2) + # Error bars
+  scale_color_manual(values = c("Control" = "gray", "Intervention" = "black")) +
+  scale_x_discrete(name = "") +
+  scale_y_continuous(name = "Mean SPACIC ± SE", limits = c(1, 5)) +
+  theme_classic(base_size = 20) + # Clean theme with larger font
+  theme(legend.position = c(0.05, 0.95), # Position in top-left corner (normalized coordinates)
+    legend.justification = c("left", "top"), # Align legend to the top-left corner
+    legend.title = element_blank(), # Remove legend title
+    legend.background = element_rect(fill = "white", color = "black", size = 0.5)) # Legend position
+SPACIC_plot
+
+#ggsave(filename = "SPACIC_plots_20241122.png", 
+       plot = SPACIC_plots, path = "SPACIC")
+```
+
+
+### alles hieronder is oud
+
+```{r full SPACIC full picture, include = TRUE}
+SPACIC_plots
+```
+
+## K nowledge
+```{r visualising full K, include = FALSE}
+Kfull_B_plot <- ggplot(schooldata, aes(x = Before_K_mean, fill = Treatment)) +
+  facet_grid( School_ordered ~.) +
+  geom_histogram(binwidth = 0.2) + 
+  scale_x_continuous("Mean K before") +
+  scale_y_continuous("Number of pupils", limits = c(0, 9), breaks = c(0, 2, 4, 6, 8)) +
+  theme_classic() +
+  theme(strip.text = element_blank()) +
+  guides(fill = FALSE)  
+
+Kfull_A_plot <- ggplot(schooldata, aes(x = After_K_mean, fill = Treatment)) +
+  facet_grid( School_ordered ~.) +
+  geom_histogram(binwidth = 0.2) + 
+  scale_x_continuous("Mean K after") +
+  scale_y_continuous("", limits = c(0, 9), breaks = c(0, 2, 4, 6, 8)) +
+  theme_classic()
+
+Kfull_plots <- Kfull_B_plot + Kfull_A_plot + plot_layout(nrow = 1)
+
+ggsave(filename = "Kfull_plots_20241122.png", 
+       plot = Kfull_plots, path = "SPACIC")
+```
+
+```{r full K full picture, include = TRUE}
+Kfull_plots
+```
+
+## C onfidence
+```{r visualising full C, include = FALSE}
+Cfull_B_plot <- ggplot(schooldata, aes(x = Before_C_mean, fill = Treatment)) +
+  facet_grid( School_ordered ~.) +
+  geom_histogram(binwidth = 0.2) + 
+  scale_x_continuous("Mean C before") +
+  scale_y_continuous("Number of pupils", limits = c(0, 9), breaks = c(0, 2, 4, 6, 8)) +
+  theme_classic() +
+  theme(strip.text = element_blank()) +
+  guides(fill = FALSE)  
+
+Cfull_A_plot <- ggplot(schooldata, aes(x = After_C_mean, fill = Treatment)) +
+  facet_grid( School_ordered ~.) +
+  geom_histogram(binwidth = 0.2) + 
+  scale_x_continuous("Mean C after") +
+  scale_y_continuous("", limits = c(0, 9), breaks = c(0, 2, 4, 6, 8)) +
+  theme_classic()
+
+Cfull_plots <- Cfull_B_plot + Cfull_A_plot + plot_layout(nrow = 1)
+
+ggsave(filename = "Cfull_plots_20241122.png", 
+       plot = Cfull_plots, path = "SPACIC")
+```
+
+```{r full C full picture, include = TRUE}
+Cfull_plots
+```
+
+## W illingness
+```{r visualising full C, include = FALSE}
+Wfull_B_plot <- ggplot(schooldata, aes(x = Before_W_mean, fill = Treatment)) +
+  facet_grid(School_ordered ~.) +
+  geom_histogram(binwidth = 0.2) + 
+  scale_x_continuous("Mean W before") +
+  scale_y_continuous("Number of pupils", limits = c(0, 9), breaks = c(0, 2, 4, 6, 8)) +
+  theme_classic() +
+  theme(strip.text = element_blank()) +
+  guides(fill = FALSE)  
+
+Wfull_A_plot <- ggplot(schooldata, aes(x = After_W_mean, fill = Treatment)) +
+  facet_grid(School_ordered ~.) +
+  geom_histogram(binwidth = 0.2) + 
+  scale_x_continuous("Mean W after") +
+  scale_y_continuous("", limits = c(0, 9), breaks = c(0, 2, 4, 6, 8)) +
+  theme_classic()
+
+Wfull_plots <- Wfull_B_plot + Wfull_A_plot + plot_layout(nrow = 1)
+
+ggsave(filename = "Wfull_plots_20241122.png", 
+       plot = Wfull_plots, path = "SPACIC")
+```
+
+```{r full C full picture, include = TRUE}
+Wfull_plots
+```
