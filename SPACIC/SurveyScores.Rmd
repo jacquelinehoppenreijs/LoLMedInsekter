@@ -304,3 +304,9 @@ ggsave(filename = "Wfull_plots_20241122.png",
 ```{r full C full picture, include = TRUE}
 Wfull_plots
 ```
+
+# Descriptive stats
+
+## Whole dataset
+
+## RM subset
