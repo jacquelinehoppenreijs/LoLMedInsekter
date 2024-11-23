@@ -171,7 +171,7 @@ scoredata$Timing_ordered = factor(scoredata$Timing, levels=c("Pre-Test", "Post-T
 
 ```
 
-```{r visualising full SPACIC, include = FALSE}
+```{r visualising mean SPACIC, include = FALSE}
 meanSPACIC_b_Control <- mean(control_data_b$Full_SPACIP_mean)
 seSPACIC_b_Control <- sd(control_data_b$Full_SPACIP_mean)/sqrt(length(control_data_b$Full_SPACIP_mean))
 
@@ -204,106 +204,152 @@ SPACIC_plot <- ggplot(SPACIC_data, aes(x = Moment, y = Mean, group = Group)) +
   scale_x_discrete(name = "") +
   scale_y_continuous(name = "Mean SPACIC ± SE", limits = c(1, 5)) +
   theme_classic(base_size = 22) + 
-  theme(axis.title = element_text(size = 24, face = "bold")) +
+  theme(axis.title = element_text(size = 24, face = "bold"), 
+        axis.text.x = element_blank(), axis.ticks.x = element_blank()) +
   theme(legend.position = c(0.05, 0.95), 
     legend.justification = c("left", "top"),
     legend.title = element_blank(), 
     legend.background = element_rect(fill = "white", color = "black", linewidth = 0.5)) 
 SPACIC_plot
-
-ggsave(filename = "SPACIC_20241123.png", 
-       plot = SPACIC_plot, path = "SPACIC")
-```
-
-
-### alles hieronder is oud
-
-```{r full SPACIC full picture, include = TRUE}
-SPACIC_plots
 ```
 
 ## K nowledge
-```{r visualising full K, include = FALSE}
-Kfull_B_plot <- ggplot(schooldata, aes(x = Before_K_mean, fill = Treatment)) +
-  facet_grid( School_ordered ~.) +
-  geom_histogram(binwidth = 0.2) + 
-  scale_x_continuous("Mean K before") +
-  scale_y_continuous("Number of pupils", limits = c(0, 9), breaks = c(0, 2, 4, 6, 8)) +
-  theme_classic() +
-  theme(strip.text = element_blank()) +
-  guides(fill = FALSE)  
+```{r visualising mean K, include = FALSE}
+meanKfull_b_Control <- mean(control_data_b$K_mean)
+seKfull_b_Control <- sd(control_data_b$K_mean)/sqrt(length(control_data_b$K_mean))
 
-Kfull_A_plot <- ggplot(schooldata, aes(x = After_K_mean, fill = Treatment)) +
-  facet_grid( School_ordered ~.) +
-  geom_histogram(binwidth = 0.2) + 
-  scale_x_continuous("Mean K after") +
-  scale_y_continuous("", limits = c(0, 9), breaks = c(0, 2, 4, 6, 8)) +
-  theme_classic()
+meanKfull_b_Intervention <- mean(intervention_data_b$K_mean)
+seKfull_b_Intervention <- sd(intervention_data_b$K_mean)/sqrt(length(intervention_data_b$K_mean))
 
-Kfull_plots <- Kfull_B_plot + Kfull_A_plot + plot_layout(nrow = 1)
+meanKfull_a_Control <- mean(control_data_a$K_mean)
+seKfull_a_Control <- sd(control_data_a$K_mean)/sqrt(length(control_data_a$K_mean))
 
-ggsave(filename = "Kfull_plots_20241122.png", 
-       plot = Kfull_plots, path = "SPACIC")
-```
+meanKfull_a_Intervention <- mean(intervention_data_a$K_mean)
+seKfull_a_Intervention <- sd(intervention_data_a$K_mean)/sqrt(length(intervention_data_a$K_mean))
 
-```{r full K full picture, include = TRUE}
-Kfull_plots
+Kfull_data <- data.frame(
+  Group = rep(c("Control", "Intervention"), each = 2),
+  Moment = rep(c("Pre-Test", "Post-Test"), times = 2),
+  Mean = c(meanKfull_b_Control, meanKfull_a_Control, 
+           meanKfull_b_Intervention, meanKfull_a_Intervention),
+  SE = c(seKfull_b_Control, seKfull_a_Control, 
+         seKfull_b_Intervention, seKfull_a_Intervention)
+)
+
+Kfull_data$Moment = factor(Kfull_data$Moment, levels=c("Pre-Test", "Post-Test"))
+Kfull_data$Group <- factor(Kfull_data$Group, levels = c("Control", "Intervention"))
+
+Kfull_plot <- ggplot(Kfull_data, aes(x = Moment, y = Mean, group = Group)) +
+  geom_line(aes(color = Group), linewidth = 1.2) + 
+  geom_point(aes(color = Group), size = 4) + 
+  geom_errorbar(aes(ymin = Mean - SE, ymax = Mean + SE, color = Group), width = 0.2, size = 1.2) + 
+  scale_color_manual(values = c("Control" = "azure4", "Intervention" = "black")) +
+  scale_x_discrete(name = "") +
+  scale_y_continuous(name = "Mean K ± SE", limits = c(1, 5)) +
+  theme_classic(base_size = 22) + 
+  theme(axis.title = element_text(size = 24, face = "bold")) +
+  theme(legend.position = "none") #+
+  #theme(legend.position = c(0.05, 0.95), 
+    #legend.justification = c("left", "top"),
+    #legend.title = element_blank(), 
+    #legend.background = element_rect(fill = "white", color = "black", linewidth = 0.5)) 
+Kfull_plot
 ```
 
 ## C onfidence
-```{r visualising full C, include = FALSE}
-Cfull_B_plot <- ggplot(schooldata, aes(x = Before_C_mean, fill = Treatment)) +
-  facet_grid( School_ordered ~.) +
-  geom_histogram(binwidth = 0.2) + 
-  scale_x_continuous("Mean C before") +
-  scale_y_continuous("Number of pupils", limits = c(0, 9), breaks = c(0, 2, 4, 6, 8)) +
-  theme_classic() +
-  theme(strip.text = element_blank()) +
-  guides(fill = FALSE)  
+```{r visualising mean C, include = FALSE}
+meanCfull_b_Control <- mean(control_data_b$C_mean)
+seCfull_b_Control <- sd(control_data_b$C_mean)/sqrt(length(control_data_b$C_mean))
 
-Cfull_A_plot <- ggplot(schooldata, aes(x = After_C_mean, fill = Treatment)) +
-  facet_grid( School_ordered ~.) +
-  geom_histogram(binwidth = 0.2) + 
-  scale_x_continuous("Mean C after") +
-  scale_y_continuous("", limits = c(0, 9), breaks = c(0, 2, 4, 6, 8)) +
-  theme_classic()
+meanCfull_b_Intervention <- mean(intervention_data_b$C_mean)
+seCfull_b_Intervention <- sd(intervention_data_b$C_mean)/sqrt(length(intervention_data_b$C_mean))
 
-Cfull_plots <- Cfull_B_plot + Cfull_A_plot + plot_layout(nrow = 1)
+meanCfull_a_Control <- mean(control_data_a$C_mean)
+seCfull_a_Control <- sd(control_data_a$C_mean)/sqrt(length(control_data_a$C_mean))
 
-ggsave(filename = "Cfull_plots_20241122.png", 
-       plot = Cfull_plots, path = "SPACIC")
-```
+meanCfull_a_Intervention <- mean(intervention_data_a$C_mean)
+seCfull_a_Intervention <- sd(intervention_data_a$C_mean)/sqrt(length(intervention_data_a$C_mean))
 
-```{r full C full picture, include = TRUE}
-Cfull_plots
+Cfull_data <- data.frame(
+  Group = rep(c("Control", "Intervention"), each = 2),
+  Moment = rep(c("Pre-Test", "Post-Test"), times = 2),
+  Mean = c(meanCfull_b_Control, meanCfull_a_Control, 
+           meanCfull_b_Intervention, meanCfull_a_Intervention),
+  SE = c(seCfull_b_Control, seCfull_a_Control, 
+         seCfull_b_Intervention, seCfull_a_Intervention)
+)
+
+Cfull_data$Moment = factor(Cfull_data$Moment, levels=c("Pre-Test", "Post-Test"))
+Cfull_data$Group <- factor(Cfull_data$Group, levels = c("Control", "Intervention"))
+
+Cfull_plot <- ggplot(Cfull_data, aes(x = Moment, y = Mean, group = Group)) +
+  geom_line(aes(color = Group), linewidth = 1.2) + 
+  geom_point(aes(color = Group), size = 4) + 
+  geom_errorbar(aes(ymin = Mean - SE, ymax = Mean + SE, color = Group), width = 0.2, size = 1.2) + 
+  scale_color_manual(values = c("Control" = "azure4", "Intervention" = "black")) +
+  scale_x_discrete(name = "") +
+  scale_y_continuous(name = "Mean C ± SE", limits = c(1, 5)) +
+  theme_classic(base_size = 22) + 
+  theme(axis.title = element_text(size = 24, face = "bold"), 
+        axis.text.x = element_blank(), axis.ticks.x = element_blank()) +
+  theme(legend.position = "none") #+
+  #theme(legend.position = c(0.05, 0.95), 
+    #legend.justification = c("left", "top"),
+    #legend.title = element_blank(), 
+    #legend.background = element_rect(fill = "white", color = "black", linewidth = 0.5)) 
+Cfull_plot
 ```
 
 ## W illingness
-```{r visualising full C, include = FALSE}
-Wfull_B_plot <- ggplot(schooldata, aes(x = Before_W_mean, fill = Treatment)) +
-  facet_grid(School_ordered ~.) +
-  geom_histogram(binwidth = 0.2) + 
-  scale_x_continuous("Mean W before") +
-  scale_y_continuous("Number of pupils", limits = c(0, 9), breaks = c(0, 2, 4, 6, 8)) +
-  theme_classic() +
-  theme(strip.text = element_blank()) +
-  guides(fill = FALSE)  
+```{r visualising mean W, include = FALSE}
+meanWfull_b_Control <- mean(control_data_b$W_mean)
+seWfull_b_Control <- sd(control_data_b$W_mean)/sqrt(length(control_data_b$W_mean))
 
-Wfull_A_plot <- ggplot(schooldata, aes(x = After_W_mean, fill = Treatment)) +
-  facet_grid(School_ordered ~.) +
-  geom_histogram(binwidth = 0.2) + 
-  scale_x_continuous("Mean W after") +
-  scale_y_continuous("", limits = c(0, 9), breaks = c(0, 2, 4, 6, 8)) +
-  theme_classic()
+meanWfull_b_Intervention <- mean(intervention_data_b$W_mean)
+seWfull_b_Intervention <- sd(intervention_data_b$W_mean)/sqrt(length(intervention_data_b$W_mean))
 
-Wfull_plots <- Wfull_B_plot + Wfull_A_plot + plot_layout(nrow = 1)
+meanWfull_a_Control <- mean(control_data_a$W_mean)
+seWfull_a_Control <- sd(control_data_a$W_mean)/sqrt(length(control_data_a$W_mean))
 
-ggsave(filename = "Wfull_plots_20241122.png", 
-       plot = Wfull_plots, path = "SPACIC")
+meanWfull_a_Intervention <- mean(intervention_data_a$W_mean)
+seWfull_a_Intervention <- sd(intervention_data_a$W_mean)/sqrt(length(intervention_data_a$W_mean))
+
+Wfull_data <- data.frame(
+  Group = rep(c("Control", "Intervention"), each = 2),
+  Moment = rep(c("Pre-Test", "Post-Test"), times = 2),
+  Mean = c(meanWfull_b_Control, meanWfull_a_Control, 
+           meanWfull_b_Intervention, meanWfull_a_Intervention),
+  SE = c(seWfull_b_Control, seWfull_a_Control, 
+         seWfull_b_Intervention, seWfull_a_Intervention)
+)
+
+Wfull_data$Moment = factor(Wfull_data$Moment, levels=c("Pre-Test", "Post-Test"))
+Wfull_data$Group <- factor(Wfull_data$Group, levels = c("Control", "Intervention"))
+
+Wfull_plot <- ggplot(Wfull_data, aes(x = Moment, y = Mean, group = Group)) +
+  geom_line(aes(color = Group), linewidth = 1.2) + 
+  geom_point(aes(color = Group), size = 4) + 
+  geom_errorbar(aes(ymin = Mean - SE, ymax = Mean + SE, color = Group), width = 0.2, size = 1.2) + 
+  scale_color_manual(values = c("Control" = "azure4", "Intervention" = "black")) +
+  scale_x_discrete(name = "") +
+  scale_y_continuous(name = "Mean W ± SE", limits = c(1, 5)) +
+  theme_classic(base_size = 22) + 
+  theme(axis.title = element_text(size = 24, face = "bold")) +
+  theme(legend.position = "none") #+
+  #theme(legend.position = c(0.05, 0.95), 
+    #legend.justification = c("left", "top"),
+    #legend.title = element_blank(), 
+    #legend.background = element_rect(fill = "white", color = "black", linewidth = 0.5)) 
+Wfull_plot
+
 ```
 
-```{r full C full picture, include = TRUE}
-Wfull_plots
+```{r combine all line plots and save, include = TRUE}
+Line_plots_20241123 <- SPACIC_plot + Cfull_plot + Kfull_plot + Wfull_plot + plot_layout(nrow = 2)
+Line_plots_20241123
+
+ggsave(filename = "Line_plots_20241123.png", 
+       plot = Line_plots_20241123, path = "SPACIC")
 ```
 
 # Descriptive stats
