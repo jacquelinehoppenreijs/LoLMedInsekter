@@ -197,21 +197,22 @@ SPACIC_data$Moment = factor(SPACIC_data$Moment, levels=c("Pre-Test", "Post-Test"
 SPACIC_data$Group <- factor(SPACIC_data$Group, levels = c("Control", "Intervention"))
 
 SPACIC_plot <- ggplot(SPACIC_data, aes(x = Moment, y = Mean, group = Group)) +
-  geom_line(aes(color = Group),size = 1.2) + # Line connecting the points
-  geom_point(aes(color = Group),size = 4) + # Points for means
-  geom_errorbar(aes(ymin = Mean - SE, ymax = Mean + SE, color = Group), width = 0.2, size = 1.2) + # Error bars
-  scale_color_manual(values = c("Control" = "gray", "Intervention" = "black")) +
+  geom_line(aes(color = Group), linewidth = 1.2) + 
+  geom_point(aes(color = Group), size = 4) + 
+  geom_errorbar(aes(ymin = Mean - SE, ymax = Mean + SE, color = Group), width = 0.2, size = 1.2) + 
+  scale_color_manual(values = c("Control" = "azure4", "Intervention" = "black")) +
   scale_x_discrete(name = "") +
   scale_y_continuous(name = "Mean SPACIC ± SE", limits = c(1, 5)) +
-  theme_classic(base_size = 20) + # Clean theme with larger font
-  theme(legend.position = c(0.05, 0.95), # Position in top-left corner (normalized coordinates)
-    legend.justification = c("left", "top"), # Align legend to the top-left corner
-    legend.title = element_blank(), # Remove legend title
-    legend.background = element_rect(fill = "white", color = "black", size = 0.5)) # Legend position
+  theme_classic(base_size = 22) + 
+  theme(axis.title = element_text(size = 24, face = "bold")) +
+  theme(legend.position = c(0.05, 0.95), 
+    legend.justification = c("left", "top"),
+    legend.title = element_blank(), 
+    legend.background = element_rect(fill = "white", color = "black", linewidth = 0.5)) 
 SPACIC_plot
 
-#ggsave(filename = "SPACIC_plots_20241122.png", 
-       plot = SPACIC_plots, path = "SPACIC")
+ggsave(filename = "SPACIC_20241123.png", 
+       plot = SPACIC_plot, path = "SPACIC")
 ```
 
 
