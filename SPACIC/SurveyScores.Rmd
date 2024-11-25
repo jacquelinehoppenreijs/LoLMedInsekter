@@ -353,16 +353,15 @@ ggsave(filename = "Line_plots_20241123.png",
 ```
 
 # Descriptive stats
-```{r loading descriptive data, include = FALSE}
+```{r loading descriptive data full, include = FALSE}
 descr_data_full <- read_excel("./SPACIC/FullData_JH20241125.xlsx", sheet = "MergeFileTidy")
-descr_data_full$School <- as.factor(descr_data_full$School)
-#descr_data_full$Treatment <- as.factor(descr_data_full$Treatment)
-#descr_data_full$Timing <- as.factor(descr_data_full$Timing)
+descr_data_full$Treatment <- as.factor(descr_data_full$Treatment)
+descr_data_full$Timing <- as.factor(descr_data_full$Timing)
 
 str(descr_data_full)
 ```
 
-```{r build df suppl table 2, include = FALSE}
+```{r build df suppl table 2a, include = FALSE}
 descr_full_df <- ddply(descr_data_full, ~ Treatment*Timing, summarise, 
                        n_pupils = length(Full_SPACIP_mean), 
                        MeanSPACIC = mean(Full_SPACIP_mean), 
@@ -385,18 +384,40 @@ descr_full_df <- ddply(descr_data_full, ~ Treatment*Timing, summarise,
                        SEW_mean_dir = sd(W_mean_dir)/sqrt(length(W_mean_dir)),
                        MeanW_mean_ind = mean(W_mean_ind), 
                        SEW_mean_ind = sd(W_mean_ind)/sqrt(length(W_mean_ind)))
-
-data.frame(
-  Group = rep(c("Control", "Intervention"), each = 2),
-  Moment = rep(c("Pre-Test", "Post-Test"), times = 2),
-  Mean = c(meanSPACIC_b_Control, meanSPACIC_a_Control, 
-           meanSPACIC_b_Intervention, meanSPACIC_a_Intervention),
-  SE = c(seSPACIC_b_Control, seSPACIC_a_Control, 
-         seSPACIC_b_Intervention, seSPACIC_a_Intervention)
-)
 ```
 
+```{r loading descriptive data subset, include = FALSE}
+descr_data_subs <- read_excel("./SPACIC/FullData_JH20241125.xlsx", sheet = "SubsetTidy")
+descr_data_subs$Treatment <- as.factor(descr_data_subs$Treatment)
+descr_data_subs$Timing <- as.factor(descr_data_subs$Timing)
 
+str(descr_data_subs)
+```
+
+```{r build df suppl table 2b, include = FALSE}
+descr_subs_df <- ddply(descr_data_subs, ~ Treatment*Timing, summarise, 
+                       n_pupils = length(Full_SPACIP_mean), 
+                       MeanSPACIC = mean(Full_SPACIP_mean), 
+                       SESPACIC = sd(Full_SPACIP_mean)/sqrt(length(Full_SPACIP_mean)), 
+                       MeanKfull = mean(K_mean), 
+                       SEKfull = sd(K_mean)/sqrt(length(K_mean)),
+                       MeanK_mean_dir = mean(K_mean_dir), 
+                       SEK_mean_dir = sd(K_mean_dir)/sqrt(length(K_mean_dir)),
+                       MeanK_mean_ind = mean(K_mean_ind), 
+                       SEK_mean_ind = sd(K_mean_ind)/sqrt(length(K_mean_ind)), 
+                       MeanCfull = mean(C_mean), 
+                       SECfull = sd(C_mean)/sqrt(length(C_mean)),
+                       MeanC_mean_dir = mean(C_mean_dir), 
+                       SEC_mean_dir = sd(C_mean_dir)/sqrt(length(C_mean_dir)),
+                       MeanC_mean_ind = mean(C_mean_ind), 
+                       SEC_mean_ind = sd(C_mean_ind)/sqrt(length(C_mean_ind)), 
+                       MeanWfull = mean(W_mean), 
+                       SEWfull = sd(W_mean)/sqrt(length(W_mean)),
+                       MeanW_mean_dir = mean(W_mean_dir), 
+                       SEW_mean_dir = sd(W_mean_dir)/sqrt(length(W_mean_dir)),
+                       MeanW_mean_ind = mean(W_mean_ind), 
+                       SEW_mean_ind = sd(W_mean_ind)/sqrt(length(W_mean_ind)))
+```
 
 ## Whole dataset
 
