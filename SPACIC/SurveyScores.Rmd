@@ -353,6 +353,10 @@ ggsave(filename = "Line_plots_20241123.png",
 ```
 
 # Descriptive stats
+
+## Table 2
+
+### Full dataset
 ```{r loading descriptive data full, include = FALSE}
 descr_data_full <- read_excel("./SPACIC/FullData_JH20241125.xlsx", sheet = "MergeFileTidy")
 descr_data_full$Treatment <- as.factor(descr_data_full$Treatment)
@@ -361,7 +365,7 @@ descr_data_full$Timing <- as.factor(descr_data_full$Timing)
 str(descr_data_full)
 ```
 
-```{r build df suppl table 2a, include = FALSE}
+```{r build df table 2a, include = FALSE}
 descr_full_df <- ddply(descr_data_full, ~ Treatment*Timing, summarise, 
                        n_pupils = length(Full_SPACIP_mean), 
                        MeanSPACIC = mean(Full_SPACIP_mean), 
@@ -386,6 +390,7 @@ descr_full_df <- ddply(descr_data_full, ~ Treatment*Timing, summarise,
                        SEW_mean_ind = sd(W_mean_ind)/sqrt(length(W_mean_ind)))
 ```
 
+### RM ANOVA subset
 ```{r loading descriptive data subset, include = FALSE}
 descr_data_subs <- read_excel("./SPACIC/FullData_JH20241125.xlsx", sheet = "SubsetTidy")
 descr_data_subs$Treatment <- as.factor(descr_data_subs$Treatment)
@@ -394,7 +399,7 @@ descr_data_subs$Timing <- as.factor(descr_data_subs$Timing)
 str(descr_data_subs)
 ```
 
-```{r build df suppl table 2b, include = FALSE}
+```{r build df table 2b, include = FALSE}
 descr_subs_df <- ddply(descr_data_subs, ~ Treatment*Timing, summarise, 
                        n_pupils = length(Full_SPACIP_mean), 
                        MeanSPACIC = mean(Full_SPACIP_mean), 
@@ -419,6 +424,80 @@ descr_subs_df <- ddply(descr_data_subs, ~ Treatment*Timing, summarise,
                        SEW_mean_ind = sd(W_mean_ind)/sqrt(length(W_mean_ind)))
 ```
 
-## Whole dataset
+## Table S1
 
-## RM subset
+### Full dataset
+```{r build df supp table 1a, include = FALSE}
+#descr_full_df <- ddply(descr_data_full, ~ Treatment*Timing, summarise, 
+                       n_pupils = length(Full_SPACIP_mean), 
+                       MeanK_habitats = mean(K_habitats), 
+                       SEK_habitats = sd(K_habitats)/sqrt(length(K_habitats)), 
+                       MeanK_gardening = mean(K_gardening), 
+                       SEK_gardening = sd(K_gardening)/sqrt(length(K_gardening)),
+                       MeanK_growingplants = mean(K_growingplants), 
+                       SEK_growingplants = sd(K_growingplants)/sqrt(length(K_growingplants)),
+                       MeanK_lawn = mean(K_lawn), 
+                       SEK_lawn = sd(K_lawn)/sqrt(length(K_lawn)), 
+                       MeanK_avoidpesticides = mean(K_avoidpesticides), 
+                       SEK_avoidpesticides = sd(K_avoidpesticides)/sqrt(length(K_avoidpesticides)),
+                       MeanK_providenests = mean(K_providenests), 
+                       SEK_providenests = sd(K_providenests)/sqrt(length(K_providenests)),
+                       MeanK_trackdiversity = mean(K_trackdiversity), 
+                       SEK_trackdiversity = sd(K_trackdiversity)/sqrt(length(K_trackdiversity)), 
+                       MeanK_schoolyard = mean(K_schoolyard), 
+                       SEK_schoolyard = sd(K_schoolyard)/sqrt(length(K_schoolyard)),
+                       MeanK_informhowtohelp = mean(K_informhowtohelp), 
+                       SEK_informhowtohelp = sd(K_informhowtohelp)/sqrt(length(K_informhowtohelp)),
+                       MeanK_raiseawareness = mean(K_raiseawareness), 
+                       SEK_raiseawareness = sd(K_raiseawareness)/sqrt(length(K_raiseawareness)), 
+                       MeanK_positiveattitude = mean(K_positiveattitude), 
+                       SEK_positiveattitude = sd(K_positiveattitude)/sqrt(length(K_positiveattitude)), 
+                       MeanK_insectfrproducts = mean(K_insectfrproducts), 
+                       SEK_insectfrproducts = sd(K_insectfrproducts)/sqrt(length(K_insectfrproducts)),
+                       MeanK_organisations = mean(K_organisations), 
+                       SEK_organisations = sd(K_organisations)/sqrt(length(K_organisations)),
+                       MeanK_contributetoresearch = mean(K_contributetoresearch), 
+                       SEK_contributetoresearch = sd(K_contributetoresearch)/sqrt(length(K_contributetoresearch)),
+                       MeanK_contactcompanies = mean(K_contactcompanies), 
+                       SEK_contactcompanies = sd(K_contactcompanies)/sqrt(length(K_contactcompanies)), 
+                       MeanK_supportactions = mean(K_supportactions), 
+                       SEK_supportactions = sd(K_supportactions)/sqrt(length(K_supportactions)))
+```
+
+### RM ANOVA subset
+```{r build df table 2b, include = FALSE}
+descr_subs_df_K <- ddply(descr_data_full, ~ Treatment*Timing, summarise, 
+                       n_pupils = length(Full_SPACIP_mean), 
+                       MeanK_habitats = mean(K_habitats), 
+                       SEK_habitats = sd(K_habitats)/sqrt(length(K_habitats)), 
+                       MeanK_gardening = mean(K_gardening), 
+                       SEK_gardening = sd(K_gardening)/sqrt(length(K_gardening)),
+                       MeanK_growingplants = mean(K_growingplants), 
+                       SEK_growingplants = sd(K_growingplants)/sqrt(length(K_growingplants)),
+                       MeanK_lawn = mean(K_lawn), 
+                       SEK_lawn = sd(K_lawn)/sqrt(length(K_lawn)), 
+                       MeanK_avoidpesticides = mean(K_avoidpesticides), 
+                       SEK_avoidpesticides = sd(K_avoidpesticides)/sqrt(length(K_avoidpesticides)),
+                       MeanK_providenests = mean(K_providenests), 
+                       SEK_providenests = sd(K_providenests)/sqrt(length(K_providenests)),
+                       MeanK_trackdiversity = mean(K_trackdiversity), 
+                       SEK_trackdiversity = sd(K_trackdiversity)/sqrt(length(K_trackdiversity)), 
+                       MeanK_schoolyard = mean(K_schoolyard), 
+                       SEK_schoolyard = sd(K_schoolyard)/sqrt(length(K_schoolyard)),
+                       MeanK_informhowtohelp = mean(K_informhowtohelp), 
+                       SEK_informhowtohelp = sd(K_informhowtohelp)/sqrt(length(K_informhowtohelp)),
+                       MeanK_raiseawareness = mean(K_raiseawareness), 
+                       SEK_raiseawareness = sd(K_raiseawareness)/sqrt(length(K_raiseawareness)), 
+                       MeanK_positiveattitude = mean(K_positiveattitude), 
+                       SEK_positiveattitude = sd(K_positiveattitude)/sqrt(length(K_positiveattitude)), 
+                       MeanK_insectfrproducts = mean(K_insectfrproducts), 
+                       SEK_insectfrproducts = sd(K_insectfrproducts)/sqrt(length(K_insectfrproducts)),
+                       MeanK_organisations = mean(K_organisations), 
+                       SEK_organisations = sd(K_organisations)/sqrt(length(K_organisations)),
+                       MeanK_contributetoresearch = mean(K_contributetoresearch), 
+                       SEK_contributetoresearch = sd(K_contributetoresearch)/sqrt(length(K_contributetoresearch)),
+                       MeanK_contactcompanies = mean(K_contactcompanies), 
+                       SEK_contactcompanies = sd(K_contactcompanies)/sqrt(length(K_contactcompanies)), 
+                       MeanK_supportactions = mean(K_supportactions), 
+                       SEK_supportactions = sd(K_supportactions)/sqrt(length(K_supportactions)))
+```
