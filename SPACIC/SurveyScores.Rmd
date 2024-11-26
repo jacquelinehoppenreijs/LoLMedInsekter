@@ -354,17 +354,45 @@ ggsave(filename = "Line_plots_20241123.png",
 
 # Descriptive stats
 
-## Table 2
+## Table 1
 
 ### Full dataset
 ```{r loading descriptive data full, include = FALSE}
 descr_data_full <- read_excel("./SPACIC/FullData_JH20241125.xlsx", sheet = "MergeFileTidy")
 descr_data_full$Treatment <- as.factor(descr_data_full$Treatment)
 descr_data_full$Timing <- as.factor(descr_data_full$Timing)
+descr_data_full$Gender <- as.factor(descr_data_full$Gender)
 
 str(descr_data_full)
 ```
 
+```{r build df table 1a, include = FALSE}
+gender_full_df <- ddply(descr_data_full, ~ Treatment*Timing*Gender, summarise, 
+                       n_pupils = length(Full_SPACIP_mean), 
+                       MeanAge = mean(Age))
+gender_full_df
+```
+
+### RM ANOVA subset
+```{r loading descriptive data subset, include = FALSE}
+descr_data_subs <- read_excel("./SPACIC/FullData_JH20241125.xlsx", sheet = "SubsetTidy")
+descr_data_subs$Treatment <- as.factor(descr_data_subs$Treatment)
+descr_data_subs$Timing <- as.factor(descr_data_subs$Timing)
+descr_data_subs$Gender <- as.factor(descr_data_subs$Gender)
+
+str(descr_data_subs)
+```
+
+```{r build df table 1b, include = FALSE}
+gender_subs_df <- ddply(descr_data_subs, ~ Treatment*Timing*Gender, summarise, 
+                       n_pupils = length(Full_SPACIP_mean), 
+                       MeanAge = mean(Age))
+gender_subs_df
+```
+
+## Table 2
+
+### Full dataset
 ```{r build df table 2a, include = FALSE}
 descr_full_df <- ddply(descr_data_full, ~ Treatment*Timing, summarise, 
                        n_pupils = length(Full_SPACIP_mean), 
@@ -391,14 +419,6 @@ descr_full_df <- ddply(descr_data_full, ~ Treatment*Timing, summarise,
 ```
 
 ### RM ANOVA subset
-```{r loading descriptive data subset, include = FALSE}
-descr_data_subs <- read_excel("./SPACIC/FullData_JH20241125.xlsx", sheet = "SubsetTidy")
-descr_data_subs$Treatment <- as.factor(descr_data_subs$Treatment)
-descr_data_subs$Timing <- as.factor(descr_data_subs$Timing)
-
-str(descr_data_subs)
-```
-
 ```{r build df table 2b, include = FALSE}
 descr_subs_df <- ddply(descr_data_subs, ~ Treatment*Timing, summarise, 
                        n_pupils = length(Full_SPACIP_mean), 
