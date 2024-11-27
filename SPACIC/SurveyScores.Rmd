@@ -452,7 +452,7 @@ descr_subs_df2b <- ddply(descr_data_subs, ~ Treatment*Timing, summarise,
                        SEW_mean_dir = sd(W_mean_dir)/sqrt(length(W_mean_dir)),
                        MeanW_mean_ind = mean(W_mean_ind), 
                        SEW_mean_ind = sd(W_mean_ind)/sqrt(length(W_mean_ind)))
-descr_full_df2b
+descr_subs_df2b
 ```
 
 ## Table S1
@@ -579,7 +579,7 @@ descr_full_df_C
 
 ### Full dataset
 ```{r build df supp table 3, include = FALSE}
-descr_full_df_C <- ddply(descr_data_full, ~ Treatment*Timing, summarise, 
+descr_full_df_W <- ddply(descr_data_full, ~ Treatment*Timing, summarise, 
                        n_pupils = length(Full_SPACIP_mean), 
                        MeanW_habitats = mean(W_habitats), 
                        SEW_habitats = sd(W_habitats)/sqrt(length(W_habitats)), 
@@ -601,8 +601,8 @@ descr_full_df_C <- ddply(descr_data_full, ~ Treatment*Timing, summarise,
                        SEW_informhowtohelp = sd(W_informhowtohelp)/sqrt(length(W_informhowtohelp)),
                        MeanW_raiseawareness = mean(W_raiseawareness), 
                        SEW_raiseawareness = sd(W_raiseawareness)/sqrt(length(W_raiseawareness)), 
-                       MeanW_positiveattitude = mean(W_positiveattitude), 
-                       SEW_positiveattitude = sd(W_positiveattitude)/sqrt(length(W_positiveattitude)), 
+                       MeanW_positiveattitude = mean(W_positiveattitudes), 
+                       SEW_positiveattitude = sd(W_positiveattitudes)/sqrt(length(W_positiveattitudes)), 
                        MeanW_insectfrproducts = mean(W_insectfrproducts), 
                        SEW_insectfrproducts = sd(W_insectfrproducts)/sqrt(length(W_insectfrproducts)),
                        MeanW_organisations = mean(W_organisations), 
@@ -611,8 +611,8 @@ descr_full_df_C <- ddply(descr_data_full, ~ Treatment*Timing, summarise,
                        SEW_contributetoresearch = sd(W_contributetoresearch)/sqrt(length(W_contributetoresearch)),
                        MeanW_contactcompanies = mean(W_contactcompanies), 
                        SEW_contactcompanies = sd(W_contactcompanies)/sqrt(length(W_contactcompanies)), 
-                       MeanW_supportactions = mean(W_supportactions), 
-                       SEW_supportactions = sd(W_supportactions)/sqrt(length(W_supportactions)))
+                       MeanW_supportactions = mean(W_supportaction), 
+                       SEW_supportactions = sd(W_supportaction)/sqrt(length(W_supportaction)))
 descr_full_df_W
 ```
 
