@@ -17,7 +17,31 @@ p_load(readxl, tidyverse, plyr, dplyr, lattice, ggplot2, png, colorblindcheck, b
 palette <- c("#104e8b", "#458b00", "#eead0e", "#9F2B68") 
 palette_check(palette)
 palette_bivariate_plot(palette)
+
+#Check which packages and versions are included
+package_versions <- function(packages=NULL, base=FALSE, sort=FALSE) {
+    if (is.null(packages))
+        packages <- names(sessionInfo()$otherPkgs)
+    if (base)
+        packages <- c("base", packages)
+    if (sort)
+        packages <- sort(packages)
+    if (!is.null(packages)) {
+        tmp <- data.frame(sapply(sapply(packages, packageVersion, simplify=FALSE), as.character))
+        colnames(tmp) <- "version"
+        data.frame(package=rownames(tmp), version=tmp[1], row.names=NULL)
+    }
+}
 ```
+
+# File description
+This Rmarkdown document can be used to analyse plant and insect data, and is tailored for use in the FORMAS project "Lära och Leva med Insekter", led by Peter Lampert (Karlstad University). He can be contacted at peter.lampert@kau.se. The document is written by Jacqueline Hoppenreijs (jacquelinehthoppenreijs@gmail.com).
+
+# Software specifications
+Built with R version `r getRversion()`. 
+
+Used packages + versions: `package_versions()`.
+
 
 ```{r loading data, include = FALSE}
 schooldata <- read_excel("./SPACIC/FullData_JH20241120.xlsx", sheet = "RepeatedMeasures")
@@ -203,9 +227,10 @@ SPACIC_plot <- ggplot(SPACIC_data, aes(x = Moment, y = Mean, group = Group)) +
   scale_color_manual(values = c("Control" = "azure4", "Intervention" = "black")) +
   scale_x_discrete(name = "") +
   scale_y_continuous(name = "Mean SPACIC ± SE", limits = c(1, 5)) +
-  theme_classic(base_size = 22) + 
+  theme_classic(base_size = 24) + 
   theme(axis.title = element_text(size = 24, face = "bold"), 
-        axis.text.x = element_blank(), axis.ticks.x = element_blank()) +
+        axis.text.x = element_blank(), axis.ticks.x = element_blank(), 
+        axis.text = element_text(size = 24)) +
   theme(legend.position = c(0.05, 0.95), 
     legend.justification = c("left", "top"),
     legend.title = element_blank(), 
@@ -244,10 +269,10 @@ Kfull_plot <- ggplot(Kfull_data, aes(x = Moment, y = Mean, group = Group)) +
   geom_point(aes(color = Group), size = 4) + 
   geom_errorbar(aes(ymin = Mean - SE, ymax = Mean + SE, color = Group), width = 0.2, size = 1.2) + 
   scale_color_manual(values = c("Control" = "azure4", "Intervention" = "black")) +
-  scale_x_discrete(name = "") +
+  scale_x_discrete(name = "", labels = c("Pre-test", "Post-test")) +
   scale_y_continuous(name = "Mean K ± SE", limits = c(1, 5)) +
-  theme_classic(base_size = 22) + 
-  theme(axis.title = element_text(size = 24, face = "bold")) +
+  theme_classic(base_size = 24) + 
+  theme(axis.title = element_text(size = 24, face = "bold"), axis.text = element_text(size = 24)) +
   theme(legend.position = "none") #+
   #theme(legend.position = c(0.05, 0.95), 
     #legend.justification = c("left", "top"),
@@ -289,9 +314,10 @@ Cfull_plot <- ggplot(Cfull_data, aes(x = Moment, y = Mean, group = Group)) +
   scale_color_manual(values = c("Control" = "azure4", "Intervention" = "black")) +
   scale_x_discrete(name = "") +
   scale_y_continuous(name = "Mean C ± SE", limits = c(1, 5)) +
-  theme_classic(base_size = 22) + 
+  theme_classic(base_size = 24) + 
   theme(axis.title = element_text(size = 24, face = "bold"), 
-        axis.text.x = element_blank(), axis.ticks.x = element_blank()) +
+        axis.text.x = element_blank(), axis.ticks.x = element_blank(), 
+        axis.text = element_text(size = 24)) +
   theme(legend.position = "none") #+
   #theme(legend.position = c(0.05, 0.95), 
     #legend.justification = c("left", "top"),
@@ -331,10 +357,11 @@ Wfull_plot <- ggplot(Wfull_data, aes(x = Moment, y = Mean, group = Group)) +
   geom_point(aes(color = Group), size = 4) + 
   geom_errorbar(aes(ymin = Mean - SE, ymax = Mean + SE, color = Group), width = 0.2, size = 1.2) + 
   scale_color_manual(values = c("Control" = "azure4", "Intervention" = "black")) +
-  scale_x_discrete(name = "") +
+  scale_x_discrete(name = "", labels = c("Pre-test", "Post-test")) +
   scale_y_continuous(name = "Mean W ± SE", limits = c(1, 5)) +
-  theme_classic(base_size = 22) + 
-  theme(axis.title = element_text(size = 24, face = "bold")) +
+  theme_classic(base_size = 24) + 
+  theme(axis.title = element_text(size = 24, face = "bold"), 
+        axis.text = element_text(size = 24)) +
   theme(legend.position = "none") #+
   #theme(legend.position = c(0.05, 0.95), 
     #legend.justification = c("left", "top"),
@@ -345,11 +372,11 @@ Wfull_plot
 ```
 
 ```{r combine all line plots and save, include = TRUE}
-Line_plots_20241123 <- SPACIC_plot + Cfull_plot + Kfull_plot + Wfull_plot + plot_layout(nrow = 2)
-Line_plots_20241123
+Line_plots_20241128 <- SPACIC_plot + Cfull_plot + Kfull_plot + Wfull_plot + plot_layout(nrow = 2)
+Line_plots_20241128
 
-ggsave(filename = "Line_plots_20241123.png", 
-       plot = Line_plots_20241123, path = "SPACIC")
+ggsave(filename = "Line_plots_20241128.png", 
+       plot = Line_plots_20241128, path = "SPACIC")
 ```
 
 # ANOVA SPACIC
@@ -371,15 +398,46 @@ summary(model_scoreKfull)
 eta_squared(model_scoreKfull)
 eta_squared(model_scoreKfull, generalized = "Treatment")
 
+model_scoreKdir <- aov_car(K_mean_dir ~ Timing * Treatment + Error(Code/Timing), data = scoredata)
+summary(model_scoreKdir)
+eta_squared(model_scoreKdir)
+eta_squared(model_scoreKdir, generalized = "Treatment")
+
+model_scoreKindir <- aov_car(K_mean_ind ~ Timing * Treatment + Error(Code/Timing), data = scoredata)
+summary(model_scoreKindir)
+eta_squared(model_scoreKindir)
+eta_squared(model_scoreKindir, generalized = "Treatment")
+
 model_scoreCfull <- aov_car(C_mean ~ Timing * Treatment + Error(Code/Timing), data = scoredata)
 summary(model_scoreCfull)
 eta_squared(model_scoreCfull)
 eta_squared(model_scoreCfull, generalized = "Treatment")
 
+model_scoreCdir <- aov_car(C_mean_dir ~ Timing * Treatment + Error(Code/Timing), data = scoredata)
+summary(model_scoreCdir)
+eta_squared(model_scoreCdir)
+eta_squared(model_scoreCdir, generalized = "Treatment")
+
+model_scoreCindir <- aov_car(C_mean_ind ~ Timing * Treatment + Error(Code/Timing), data = scoredata)
+summary(model_scoreCindir)
+eta_squared(model_scoreCindir)
+eta_squared(model_scoreCindir, generalized = "Treatment")
+
 model_scoreWfull <- aov_car(W_mean ~ Timing * Treatment + Error(Code/Timing), data = scoredata)
 summary(model_scoreWfull)
 eta_squared(model_scoreWfull)
 eta_squared(model_scoreWfull, generalized = "Treatment")
+
+model_scoreWdir <- aov_car(W_mean_dir ~ Timing * Treatment + Error(Code/Timing), data = scoredata)
+summary(model_scoreWdir)
+eta_squared(model_scoreWdir)
+eta_squared(model_scoreWdir, generalized = "Treatment")
+
+model_scoreWindir <- aov_car(W_mean_ind ~ Timing * Treatment + Error(Code/Timing), data = scoredata)
+summary(model_scoreWindir)
+eta_squared(model_scoreWindir)
+eta_squared(model_scoreWindir, generalized = "Treatment")
+
 ```
 
 # Descriptive stats
