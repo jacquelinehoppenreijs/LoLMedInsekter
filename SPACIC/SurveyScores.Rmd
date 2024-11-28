@@ -390,52 +390,52 @@ scoredata$Code <- as.factor(scoredata$Code)
 
 model_scoreSPACIC <- aov_car(Full_SPACIP_mean ~ Timing * Treatment + Error(Code/Timing), data = scoredata)
 summary(model_scoreSPACIC)
-eta_squared(model_scoreSPACIC)
+eta_squared(model_scoreSPACIC, ci = 0.90)
 eta_squared(model_scoreSPACIC, generalized = "Treatment")
 
 model_scoreKfull <- aov_car(K_mean ~ Timing * Treatment + Error(Code/Timing), data = scoredata)
 summary(model_scoreKfull)
-eta_squared(model_scoreKfull)
+eta_squared(model_scoreKfull, ci = 0.90)
 eta_squared(model_scoreKfull, generalized = "Treatment")
 
 model_scoreKdir <- aov_car(K_mean_dir ~ Timing * Treatment + Error(Code/Timing), data = scoredata)
 summary(model_scoreKdir)
-eta_squared(model_scoreKdir)
+eta_squared(model_scoreKdir, ci = 0.90)
 eta_squared(model_scoreKdir, generalized = "Treatment")
 
 model_scoreKindir <- aov_car(K_mean_ind ~ Timing * Treatment + Error(Code/Timing), data = scoredata)
 summary(model_scoreKindir)
-eta_squared(model_scoreKindir)
+eta_squared(model_scoreKindir, ci = 0.90)
 eta_squared(model_scoreKindir, generalized = "Treatment")
 
 model_scoreCfull <- aov_car(C_mean ~ Timing * Treatment + Error(Code/Timing), data = scoredata)
 summary(model_scoreCfull)
-eta_squared(model_scoreCfull)
+eta_squared(model_scoreCfull, ci = 0.90)
 eta_squared(model_scoreCfull, generalized = "Treatment")
 
 model_scoreCdir <- aov_car(C_mean_dir ~ Timing * Treatment + Error(Code/Timing), data = scoredata)
 summary(model_scoreCdir)
-eta_squared(model_scoreCdir)
+eta_squared(model_scoreCdir, ci = 0.90)
 eta_squared(model_scoreCdir, generalized = "Treatment")
 
 model_scoreCindir <- aov_car(C_mean_ind ~ Timing * Treatment + Error(Code/Timing), data = scoredata)
 summary(model_scoreCindir)
-eta_squared(model_scoreCindir)
+eta_squared(model_scoreCindir, ci = 0.90)
 eta_squared(model_scoreCindir, generalized = "Treatment")
 
 model_scoreWfull <- aov_car(W_mean ~ Timing * Treatment + Error(Code/Timing), data = scoredata)
 summary(model_scoreWfull)
-eta_squared(model_scoreWfull)
+eta_squared(model_scoreWfull, ci = 0.90)
 eta_squared(model_scoreWfull, generalized = "Treatment")
 
 model_scoreWdir <- aov_car(W_mean_dir ~ Timing * Treatment + Error(Code/Timing), data = scoredata)
 summary(model_scoreWdir)
-eta_squared(model_scoreWdir)
+eta_squared(model_scoreWdir, ci = 0.90)
 eta_squared(model_scoreWdir, generalized = "Treatment")
 
 model_scoreWindir <- aov_car(W_mean_ind ~ Timing * Treatment + Error(Code/Timing), data = scoredata)
 summary(model_scoreWindir)
-eta_squared(model_scoreWindir)
+eta_squared(model_scoreWindir, ci = 0.90)
 eta_squared(model_scoreWindir, generalized = "Treatment")
 
 ```
