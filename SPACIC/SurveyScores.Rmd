@@ -11,7 +11,7 @@ knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
 
 install.packages("pacman")
 library(pacman)
-p_load(readxl, tidyverse, plyr, dplyr, lattice, ggplot2, png, colorblindcheck, broom, vegan, patchwork, scales, afex, effectsize)
+p_load(readxl, tidyverse, plyr, dplyr, lattice, ggplot2, png, colorblindcheck, broom, vegan, patchwork, scales, afex, effectsize, ltm)
 
 # Check whether the used colours are colourblindness-friendly
 palette <- c("#104e8b", "#458b00", "#eead0e", "#9F2B68") 
@@ -191,8 +191,6 @@ control_data_a <- subset(scoredata_a, Treatment == "Control")
 intervention_data_a <- subset(scoredata_a, Treatment == "Intervention")
 
 scoredata$Timing_ordered = factor(scoredata$Timing, levels=c("Pre-Test", "Post-Test"))
-
-
 ```
 
 ```{r visualising mean SPACIC, include = FALSE}
@@ -379,8 +377,7 @@ ggsave(filename = "Line_plots_20241128.png",
        plot = Line_plots_20241128, path = "SPACIC")
 ```
 
-# ANOVA SPACIC
-
+# ANOVA
 ```{r ANOVA, include = TRUE}
 str(scoredata)
 scoredata$Code <- as.factor(scoredata$Code)
@@ -529,6 +526,54 @@ descr_full_df2a <- ddply(descr_data_full, ~ Treatment*Timing, summarise,
 descr_full_df2a
 ```
 
+#### Cronbach's alpha
+```{r calculate for the full dataset, include = FALSE}
+str(descr_data_full)
+
+subs <- descr_data_full[, 28:35]
+str(subs)
+
+SPACIC_items <- descr_data_full[, 28:75]
+SPACIC_alpha <- cronbach.alpha(SPACIC_items)
+SPACIC_alpha
+
+Kfull_items <- descr_data_full[, 28:43]
+Kfull_alpha <- cronbach.alpha(Kfull_items)
+Kfull_alpha
+
+Kdir_items <- descr_data_full[, 28:35]
+Kdir_alpha <- cronbach.alpha(Kdir_items)
+Kdir_alpha
+
+Kindir_items <- descr_data_full[, 36:43]
+Kindir_alpha <- cronbach.alpha(Kindir_items)
+Kindir_alpha
+
+Cfull_items <- descr_data_full[, 44:59]
+Cfull_alpha <- cronbach.alpha(Cfull_items)
+Cfull_alpha
+
+Cdir_items <- descr_data_full[, 44:51]
+Cdir_alpha <- cronbach.alpha(Cdir_items)
+Cdir_alpha
+
+Cindir_items <- descr_data_full[, 52:59]
+Cindir_alpha <- cronbach.alpha(Cindir_items)
+Cindir_alpha
+
+Wfull_items <- descr_data_full[, 60:75]
+Wfull_alpha <- cronbach.alpha(Wfull_items)
+Wfull_alpha
+
+Wdir_items <- descr_data_full[, 60:67]
+Wdir_alpha <- cronbach.alpha(Wdir_items)
+Wdir_alpha
+
+Windir_items <- descr_data_full[, 68:75]
+Windir_alpha <- cronbach.alpha(Windir_items)
+Windir_alpha
+```
+
 ### RM ANOVA subset
 ```{r build df table 2b, include = FALSE}
 descr_subs_df2b <- ddply(descr_data_subs, ~ Treatment*Timing, summarise, 
@@ -554,6 +599,54 @@ descr_subs_df2b <- ddply(descr_data_subs, ~ Treatment*Timing, summarise,
                        MeanW_mean_ind = mean(W_mean_ind), 
                        SEW_mean_ind = sd(W_mean_ind)/sqrt(length(W_mean_ind)))
 descr_subs_df2b
+```
+
+#### Cronbach's alpha
+```{r calculate for the full dataset, include = FALSE}
+str(descr_data_subs)
+
+subs <- descr_data_subs[, 28:35]
+str(subs)
+
+SPACIC_items <- descr_data_full[, 28:75]
+SPACIC_alpha <- cronbach.alpha(SPACIC_items)
+SPACIC_alpha
+
+Kfull_items <- descr_data_full[, 28:43]
+Kfull_alpha <- cronbach.alpha(Kfull_items)
+Kfull_alpha
+
+Kdir_items <- descr_data_full[, 28:35]
+Kdir_alpha <- cronbach.alpha(Kdir_items)
+Kdir_alpha
+
+Kindir_items <- descr_data_full[, 36:43]
+Kindir_alpha <- cronbach.alpha(Kindir_items)
+Kindir_alpha
+
+Cfull_items <- descr_data_full[, 44:59]
+Cfull_alpha <- cronbach.alpha(Cfull_items)
+Cfull_alpha
+
+Cdir_items <- descr_data_full[, 44:51]
+Cdir_alpha <- cronbach.alpha(Cdir_items)
+Cdir_alpha
+
+Cindir_items <- descr_data_full[, 52:59]
+Cindir_alpha <- cronbach.alpha(Cindir_items)
+Cindir_alpha
+
+Wfull_items <- descr_data_full[, 60:75]
+Wfull_alpha <- cronbach.alpha(Wfull_items)
+Wfull_alpha
+
+Wdir_items <- descr_data_full[, 60:67]
+Wdir_alpha <- cronbach.alpha(Wdir_items)
+Wdir_alpha
+
+Windir_items <- descr_data_full[, 68:75]
+Windir_alpha <- cronbach.alpha(Windir_items)
+Windir_alpha
 ```
 
 ## Table S1
