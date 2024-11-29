@@ -460,6 +460,13 @@ descr_data_full$Timing = factor(descr_data_full$Timing, levels=c("Before", "Duri
 ```
 
 ```{r build df table 1a, include = FALSE}
+# Recalculating age
+descr_data_full$Age <- ifelse(descr_data_full$Age == 3, 12,
+                              ifelse(descr_data_full$Age == 4, 13,
+                                     ifelse(descr_data_full$Age == 5, 14,
+                                            ifelse(descr_data_full$Age == 6, 15, descr_data_full$Age))))
+
+
 gender_full_df <- ddply(descr_data_full, ~ Treatment*Timing*Gender, summarise, 
                        n_pupils = length(Full_SPACIP_mean), 
                        MeanAge = mean(Age))
@@ -481,6 +488,12 @@ descr_data_subs$Timing = factor(descr_data_subs$Timing, levels=c("Pre-Test", "Po
 ```
 
 ```{r build df table 1b, include = FALSE}
+# Recalculating age
+descr_data_subs$Age <- ifelse(descr_data_subs$Age == 3, 12,
+                              ifelse(descr_data_subs$Age == 4, 13,
+                                     ifelse(descr_data_subs$Age == 5, 14,
+                                            ifelse(descr_data_subs$Age == 6, 15, descr_data_subs$Age))))
+
 gender_subs_df <- ddply(descr_data_subs, ~ Treatment*Timing*Gender, summarise, 
                        n_pupils = length(Full_SPACIP_mean), 
                        MeanAge = mean(Age))
