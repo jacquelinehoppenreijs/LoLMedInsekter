@@ -174,7 +174,7 @@ Wfull_plots
 ## SPACIC
 
 ```{r loading more data, include = FALSE}
-scoredata <- read_excel("./SPACIC/FullData_JH20241122.xlsx", sheet = "SubsetTidy")
+scoredata <- read_excel("./SPACIC/FullData_JH20241202.xlsx", sheet = "SubsetTidy")
 scoredata$School <- as.factor(scoredata$School)
 scoredata$Treatment <- as.factor(scoredata$Treatment)
 scoredata$Timing <- as.factor(scoredata$Timing)
@@ -443,7 +443,7 @@ eta_squared(model_scoreWindir, generalized = "Treatment")
 
 ### Full dataset
 ```{r loading descriptive data full, include = FALSE}
-descr_data_full <- read_excel("./SPACIC/FullData_JH20241125.xlsx", sheet = "MergeFileTidy")
+descr_data_full <- read_excel("./SPACIC/FullData_JH20241202.xlsx", sheet = "MergeFileTidy")
 descr_data_full$School <- as.factor(descr_data_full$School)
 descr_data_full$Treatment <- as.factor(descr_data_full$Treatment)
 descr_data_full$Timing <- as.factor(descr_data_full$Timing)
@@ -471,7 +471,7 @@ gender_full_df
 
 ### RM ANOVA subset
 ```{r loading descriptive data subset, include = FALSE}
-descr_data_subs <- read_excel("./SPACIC/FullData_JH20241125.xlsx", sheet = "SubsetTidy")
+descr_data_subs <- read_excel("./SPACIC/FullData_JH20241202.xlsx", sheet = "SubsetTidy")
 descr_data_subs$School <- as.factor(descr_data_subs$School)
 descr_data_subs$Treatment <- as.factor(descr_data_subs$Treatment)
 descr_data_subs$Timing <- as.factor(descr_data_subs$Timing)
@@ -480,7 +480,7 @@ descr_data_subs$Gender <- as.factor(descr_data_subs$Gender)
 str(descr_data_subs)
 
 descr_data_subs$Treatment = factor(descr_data_subs$Treatment, levels=c("Intervention", "Control"))
-descr_data_subs$Timing = factor(descr_data_subs$Timing, levels=c("Pre-Test", "Post-Test"))
+descr_data_subs$Timing = factor(descr_data_subs$Timing, levels=c("Before", "After"))
 ```
 
 ```{r build df table 1b, include = FALSE}
@@ -606,46 +606,49 @@ descr_subs_df2b
 ```{r calculate for the full dataset, include = FALSE}
 str(descr_data_subs)
 
-subs <- descr_data_subs[, 28:35]
+descr_data_subs_before <- subset(descr_data_subs, Timing == "Before")
+str(descr_data_subs_before)
+
+subs <- descr_data_subs_before[, 28:35]
 str(subs)
 
-SPACIC_items <- descr_data_full[, 28:75]
+SPACIC_items <- descr_data_subs_before[, 28:75]
 SPACIC_alpha <- cronbach.alpha(SPACIC_items)
 SPACIC_alpha
 
-Kfull_items <- descr_data_full[, 28:43]
+Kfull_items <- descr_data_subs_before[, 28:43]
 Kfull_alpha <- cronbach.alpha(Kfull_items)
 Kfull_alpha
 
-Kdir_items <- descr_data_full[, 28:35]
+Kdir_items <- descr_data_subs_before[, 28:35]
 Kdir_alpha <- cronbach.alpha(Kdir_items)
 Kdir_alpha
 
-Kindir_items <- descr_data_full[, 36:43]
+Kindir_items <- descr_data_subs_before[, 36:43]
 Kindir_alpha <- cronbach.alpha(Kindir_items)
 Kindir_alpha
 
-Cfull_items <- descr_data_full[, 44:59]
+Cfull_items <- descr_data_subs_before[, 44:59]
 Cfull_alpha <- cronbach.alpha(Cfull_items)
 Cfull_alpha
 
-Cdir_items <- descr_data_full[, 44:51]
+Cdir_items <- descr_data_subs_before[, 44:51]
 Cdir_alpha <- cronbach.alpha(Cdir_items)
 Cdir_alpha
 
-Cindir_items <- descr_data_full[, 52:59]
+Cindir_items <- descr_data_subs_before[, 52:59]
 Cindir_alpha <- cronbach.alpha(Cindir_items)
 Cindir_alpha
 
-Wfull_items <- descr_data_full[, 60:75]
+Wfull_items <- descr_data_subs_before[, 60:75]
 Wfull_alpha <- cronbach.alpha(Wfull_items)
 Wfull_alpha
 
-Wdir_items <- descr_data_full[, 60:67]
+Wdir_items <- descr_data_subs_before[, 60:67]
 Wdir_alpha <- cronbach.alpha(Wdir_items)
 Wdir_alpha
 
-Windir_items <- descr_data_full[, 68:75]
+Windir_items <- descr_data_subs_before[, 68:75]
 Windir_alpha <- cronbach.alpha(Windir_items)
 Windir_alpha
 ```
