@@ -181,8 +181,8 @@ scoredata$Timing <- as.factor(scoredata$Timing)
 
 str(scoredata)
 
-scoredata_b <- subset(scoredata, Timing == "Pre-Test")
-scoredata_a <- subset(scoredata, Timing == "Post-Test")
+scoredata_b <- subset(scoredata, Timing == "Before")
+scoredata_a <- subset(scoredata, Timing == "After")
 
 control_data_b <- subset(scoredata_b, Treatment == "Control")
 intervention_data_b <- subset(scoredata_b, Treatment == "Intervention")
@@ -228,7 +228,8 @@ SPACIC_plot <- ggplot(SPACIC_data, aes(x = Moment, y = Mean, group = Group)) +
   theme_classic(base_size = 24) + 
   theme(axis.title = element_text(size = 24, face = "bold"), 
         axis.text.x = element_blank(), axis.ticks.x = element_blank(), 
-        axis.text = element_text(size = 24)) +
+        axis.text = element_text(size = 24),
+        text = element_text(family = "serif")) +
   theme(legend.position = c(0.05, 0.95), 
     legend.justification = c("left", "top"),
     legend.title = element_blank(), 
@@ -270,7 +271,9 @@ Kfull_plot <- ggplot(Kfull_data, aes(x = Moment, y = Mean, group = Group)) +
   scale_x_discrete(name = "", labels = c("Pre-test", "Post-test")) +
   scale_y_continuous(name = "Mean K ± SE", limits = c(1, 5)) +
   theme_classic(base_size = 24) + 
-  theme(axis.title = element_text(size = 24, face = "bold"), axis.text = element_text(size = 24)) +
+  theme(axis.title = element_text(size = 24, face = "bold"), 
+        axis.text = element_text(size = 24),
+        text = element_text(family = "serif")) +
   theme(legend.position = "none") #+
   #theme(legend.position = c(0.05, 0.95), 
     #legend.justification = c("left", "top"),
@@ -315,7 +318,8 @@ Cfull_plot <- ggplot(Cfull_data, aes(x = Moment, y = Mean, group = Group)) +
   theme_classic(base_size = 24) + 
   theme(axis.title = element_text(size = 24, face = "bold"), 
         axis.text.x = element_blank(), axis.ticks.x = element_blank(), 
-        axis.text = element_text(size = 24)) +
+        axis.text = element_text(size = 24),
+        text = element_text(family = "serif")) +
   theme(legend.position = "none") #+
   #theme(legend.position = c(0.05, 0.95), 
     #legend.justification = c("left", "top"),
@@ -359,7 +363,8 @@ Wfull_plot <- ggplot(Wfull_data, aes(x = Moment, y = Mean, group = Group)) +
   scale_y_continuous(name = "Mean W ± SE", limits = c(1, 5)) +
   theme_classic(base_size = 24) + 
   theme(axis.title = element_text(size = 24, face = "bold"), 
-        axis.text = element_text(size = 24)) +
+        axis.text = element_text(size = 24), 
+        text = element_text(family = "serif")) +
   theme(legend.position = "none") #+
   #theme(legend.position = c(0.05, 0.95), 
     #legend.justification = c("left", "top"),
@@ -370,11 +375,11 @@ Wfull_plot
 ```
 
 ```{r combine all line plots and save, include = TRUE}
-Line_plots_20241128 <- SPACIC_plot + Cfull_plot + Kfull_plot + Wfull_plot + plot_layout(nrow = 2)
-Line_plots_20241128
+Line_plots_20241216 <- SPACIC_plot + Cfull_plot + Kfull_plot + Wfull_plot + plot_layout(nrow = 2)
+Line_plots_20241216
 
-ggsave(filename = "Line_plots_20241128.png", 
-       plot = Line_plots_20241128, path = "SPACIC")
+ggsave(filename = "Line_plots_20241216.png", 
+       plot = Line_plots_20241216, path = "SPACIC")
 ```
 
 # ANOVA
