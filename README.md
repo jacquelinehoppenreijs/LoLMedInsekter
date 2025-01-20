@@ -28,3 +28,6 @@ Rmarkdown helps create a readable type of output that doesn't require reading th
 You can create an output by "knitting" the Rmarkdown file in one of the top bars in Rstudio. 
 The current settings will give you a Word document as output.
 You can save the Word file with a name that reflects the data that you have analysed.
+
+
+Working in R and with Rmarkdown can be tricky, and you'll likely run into warnings (potentially problematic) and errors (problematic). First course of action is always to google these, as there's always people that have encountered the same problem before!
