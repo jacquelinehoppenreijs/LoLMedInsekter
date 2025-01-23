@@ -48,7 +48,13 @@ Built with R version `r getRversion()`.
 Used packages + versions: `r paste(package_versions())`.
 
 # Data description
-The data used in this document is collected in 2024, and describes the vegetation and occurrence of insects in four habitat types: - Sälg (1st)\ - Älvkant (1st)\ - Ö (4st)\ - Gräsmatta (1st bruksgräsmatta and 1st paradgräsmatta). Data is analysed on the level of vegetation, insects and pollinators.\\ The same code can be used for data collected in different years, as long as it's formatted in a similar way.
+The data used in this document is collected in 2024, and describes the vegetation and occurrence of insects in four habitat types: 
+- Sälg (1st)\ 
+- Älvkant (1st)\ 
+- Ö (4st)\ 
+- Gräsmatta (1st bruksgräsmatta and 1st paradgräsmatta). 
+
+Data is analysed on the level of vegetation, insects and pollinators.\ The same code can be used for data collected in different years, as long as it's formatted in a similar way.
 
 ## Structure
 The dataset used here is compiled in long format (as opposed to wide). Every observation is in its own row, which means that a find of eight honeybees in one spot takes eight rows, rather than one row and a column that states the number of individuals observed. Further, data is separated based on species groups: vegetation is analysed in one way and (thus) has its own sheet in the dataset, and insects are analysed in another way and (thus) have their own sheet in the dataset. A third sheet can be used to give information about the sites, weather conditions and observers, for example. 
@@ -72,13 +78,13 @@ cat('setwd("C:/path/to/your/folder")\n')
 
 ```{r loading plant data, include = FALSE}
 # Try to load the Excel file. Check if the file exists first.
-file_path <- "./Data/LoL_data_JH20241031.xlsx"
+file_path <- "./Sandgrund_JH20241031.xlsx"
 if (!file.exists(file_path)) {
     stop("Error: File not found. Please check that the file exists in the specified directory:\n", file_path)
 }
 
 # Load vegetation data
-plant_data_2024 <- read_excel("./Data/LoL_data_JH20241031.xlsx", sheet = "LoL_veginfo") # This line specifies which file to upload, as well as the sheet of interest
+plant_data_2024 <- read_excel("./Sandgrund_JH20241031.xlsx", sheet = "LoL_veginfo") # This line specifies which file to upload, as well as the sheet of interest
 plant_data_2024$Site <- as.factor(plant_data_2024$Site)
 plant_data_2024$Site_type <- as.factor(plant_data_2024$Site_type)
 plant_data_2024$Week <- as.factor(plant_data_2024$Week)
@@ -98,7 +104,7 @@ plant_data_2024 <- plant_data_2024 %>% # Exclude plant species that are grasses 
 str(plant_data_2024) # See what the dataset looks like
 
 site_colors <- c("Bruksgräsmatta" = "#9F2B68", # Set colours for the plots that are made later on
-                   "Paradgräsmatta" = "#9F2B68", 
+                   "Paradgräsmatta" = "#9F2B68", # If you want to change the colour, you can simply type the name of the colour, change HEX codes, or find some inspiration on <https://sape.inf.usi.ch/quick-reference/ggplot2/colour>
                    "Älvkant" = "#104e8b",        
                    "Ö_1" = "#458b00",           
                    "Ö_2" = "#458b00",           
@@ -111,8 +117,8 @@ sitetype_colors <- c("Gräsmatta" = "#9F2B68",
 ```
 
 ```{r build plant dataframe, include = FALSE}
-df_plants_2024 <- ddply(plant_data_2024, ~ Week*Site_type*Site, summarise, # Summarise the dataset to get numbers per combination of factors (in this case, week number, site type and site)
-                         SR = length(unique(Species_sv))) # The newly created variable, species richness (SR)
+df_plants_2024 <- ddply(plant_data_2024, ~ Week*Site_type*Site, summarise, # Summarise the dataset to get numbers per combination of factors (in this case, the factors after "~": week number, site type and site)
+                         SR = length(unique(Species_sv))) # The newly created variable, species richness (SR). Length counts the number of data points (e.g., eight honey bees) per combination of week, site type and site, and "unique" counts the number of data points with a unique name (e.g., one: honey bee). 
 
 df_plants_2024 <- df_plants_2024 %>% 
   mutate(Week = as.integer(as.character(Week)))
@@ -125,7 +131,8 @@ df_plants_2024 <- df_plants_2024 %>%
   complete(Week = 18:34, nesting(Site_type, Site), fill = list(SR = 0)) %>%
   semi_join(valid_combinations, by = c("Site_type", "Site"))
 
-str(df_plants_2024) # See what the dataset looks like
+str(df_plants_2024) # See what the structure of the dataframe looks like
+head(df_plants_2024) # See what the first lines of the dataframe look like
 ```
 
 ```{r calculate total number of plant species, include = FALSE}
@@ -134,15 +141,15 @@ plant_SR_2024 = length(unique(plant_data_2024$Species_sv)) # Calculate the numbe
 print(plant_SR_2024)
 ```
 
-The total number of plant species in the dataset is ` r (plant_SR_2024)`. They are distributed over the different sites as follows:
+The total number of plant species in the dataset is `r plant_SR_2024`. They are distributed over the different sites as follows:
 
 ```{r plotting plant data, per week, include = FALSE}
-plot_plantSR_2024 <- ggplot(df_plants_2024, aes(x = as.factor(Week), y = SR, fill = Site)) + # This line selects the variables of interest for the plot and determines the name of the plot
+plot_plantSR_2024 <- ggplot(df_plants_2024, aes(x = as.factor(Week), y = SR, fill = Site)) + # This line determines the name of the plot and selects the variables of interest for the plot (week number on the x-axis, species richness on the y-axis, both pulled from the dataframe we created above).
   geom_bar(stat = "identity", position = "dodge") + # This line tells in what type of plot we want to visualise those variables
   scale_y_continuous(name = "Artrikedom (minus gräss och träd)", limits = c(0, 25), breaks = c(5, 10, 15, 20, 25)) + # Title and characteristics of the y-axis
-  scale_fill_manual(values = site_colors, ) +
+  scale_fill_manual(values = site_colors) +
   labs(x = "Vecka", fill = "Lokal") + # Title and characteristics of the x-axis
-  theme(legend.position = "bottom") + # Placement of the legend
+  theme(legend.position = "right") + # Placement of the legend
   theme_classic() + # This line specifies the type of lay-out we want for our plot
     theme(strip.text = element_text(size = 14, face = "bold")) +
     theme(axis.title = element_text(size = 16, face = "bold")) 
@@ -170,6 +177,7 @@ df_plantsagg_2024 <- df_plantsagg_2024 %>%
 df_plantsagg_2024$Site_type <- factor(df_plantsagg_2024$Site_type, levels = c("Gräsmatta", "Älvkant", "Ö"))
 
 str(df_plantsagg_2024)
+head(df_plantsagg_2024)
 ```
 
 ```{r plotting aggregated plant data, per week, I, include = FALSE}
@@ -178,7 +186,6 @@ plot_plantaggSR_2024 <- ggplot(df_plantsagg_2024, aes(x = as.factor(Week), y = S
   scale_y_continuous(name = "Artrikedom (minus gräss och träd)", limits = c(0, 25), breaks = c(5, 10, 15, 20, 25)) +
   scale_fill_manual(values = sitetype_colors, ) +
   labs(x = "Vecka", fill = "Typ av lokal") +
-  theme(legend.position = "bottom") + 
   theme_classic() +
     theme(strip.text = element_text(size = 14, face = "bold")) +
     theme(axis.title = element_text(size = 16, face = "bold")) 
@@ -192,7 +199,7 @@ plot_plantaggSR_2024
 # Visualisation of insect data
 
 ```{r loading insect data, include = FALSE}
-insect_data_2024 <- read_excel("./Data/LoL_data_JH20241031.xlsx", sheet = "LoL_insectinfo")
+insect_data_2024 <- read_excel("./Sandgrund_JH20241031.xlsx", sheet = "LoL_insectinfo")
 insect_data_2024$Site <- as.factor(insect_data_2024$Site)
 insect_data_2024$Site_type <- as.factor(insect_data_2024$Site_type)
 insect_data_2024$Week <- as.factor(insect_data_2024$Week)
@@ -207,6 +214,7 @@ insect_data_2024 <- insect_data_2024 %>% # Here, we filter out insects that are 
   filter(Behaviour != "Flying by" | is.na(Behaviour))
 
 str(insect_data_2024)
+head(insect_data_2024)
 
 site_colors <- c("Sälg" = "goldenrod",      
                  "Bruksgräsmatta" = "#9F2B68", 
@@ -243,6 +251,7 @@ df_insects_2024 <- df_insects_2024 %>%
 df_insects_2024$Site_type <- factor(df_insects_2024$Site_type, levels = c("Sälg", "Gräsmatta", "Älvkant", "Ö"))
 
 str(df_insects_2024)
+head(df_insects_2024)
 ```
 
 ```{r calculate total number of insect species and orders, include = FALSE}
@@ -261,10 +270,287 @@ print(insect_Abundance_2024)
 
 The number of insect species in the dataset is  `r insect_SR_2024`, divided over `r insect_OR_2024` orders. The total number of organisms is `r insect_Abundance_2024`. The species and genera that were identified are:
 
-```{r list all insect species in 2024, include = TRUE}
+```{r list all insect species in 2024, include = FALSE}
 list_insects_2024 = list(unique(insect_data_2024$Species_sv))
-
-print(list_insects_2024)
 ```
 
-Hi Peter! Great if you made it to here with the code, that's amazing! Can you send the knitted document and any comments/annotations you have or would like to see to me? :)
+```{r printing insect species list, include = TRUE}
+list_insects_2024 
+```
+
+```{r plotting insect data, per week, include = FALSE}
+plot_insectAb_2024 <- ggplot(df_insects_2024, aes(x = as.factor(Week), y = Abundance, fill = Site)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  scale_y_continuous(name = "Antal insekter", limits = c(0, 70)) +
+  scale_fill_manual(values = site_colors) +
+  labs(x = "Vecka", fill = "Lokal") +
+  theme_classic() +
+  theme(strip.text = element_text(size = 14, face = "bold")) +
+  theme(axis.title = element_text(size = 16, face = "bold")) 
+
+plot_insectSR_2024 <- ggplot(df_insects_2024, aes(x = as.factor(Week), y = SR, fill = Site)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  scale_y_continuous(name = "Artrikedom insekter", limits = c(0, 12), breaks = c(2, 4, 6, 8, 10, 12)) +
+  scale_fill_manual(values = site_colors) +
+  labs(x = "Vecka", fill = "Lokal") +
+  theme_classic() +
+  theme(strip.text = element_text(size = 14, face = "bold")) +
+  theme(axis.title = element_text(size = 16, face = "bold")) 
+```
+The number of insects per site developed over time as follows:
+```{r plot of insect numbers per site, include = TRUE}
+plot_insectAb_2024
+```
+
+and species numbers were distributed over the sites as follows: 
+```{r plot of insect species numbers per site, include = TRUE}
+plot_insectSR_2024
+```
+
+If we aggregate the insect data on the level of site type, rather than site, the data looks like this: 
+```{r 1 build aggregated insect df, include = FALSE}
+df_insectsagg_2024 <- ddply(insect_data_2024, ~ Week*Site_type, summarise, 
+                            SR = length(unique(Species_sv)), 
+                            Abundance = length(Species_sv))
+
+df_insectsagg_2024 <- df_insectsagg_2024 %>%
+  mutate(Week = as.integer(as.character(Week)))
+
+df_insectsagg_2024 <- df_insectsagg_2024 %>% 
+  complete(Week = 18:34, Site_type = c("Sälg", "Gräsmatta", "Älvkant", "Ö"), fill = list(SR = 0, Abundance = 0))
+
+df_insectsagg_2024$Site_type <- factor(df_insectsagg_2024$Site_type, levels = c("Sälg", "Gräsmatta", "Älvkant", "Ö"))
+
+str(df_insectsagg_2024)
+head(df_insectsagg_2024)
+```
+
+```{r plotting aggregated insect data, per week, include = FALSE}
+plot_insectaggAb_2024 <- ggplot(df_insectsagg_2024, aes(x = as.factor(Week), y = Abundance, fill = Site_type)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  scale_y_continuous(name = "Antal insekter", limits = c(0, 100)) +
+  scale_fill_manual(values = sitetype_colors) +
+  labs(x = "Vecka", fill = "Typ av lokal") +
+  theme_classic() +
+  theme(strip.text = element_text(size = 14, face = "bold")) +
+  theme(axis.title = element_text(size = 16, face = "bold")) 
+
+plot_insectaggSR_2024 <- ggplot(df_insectsagg_2024, aes(x = as.factor(Week), y = SR, fill = Site_type)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  scale_y_continuous(name = "Artrikedom insekter", limits = c(0, 15), breaks = c(2, 4, 6, 8, 10, 12,14)) +
+  scale_fill_manual(values = sitetype_colors) +
+  labs(x = "Vecka", fill = "Typ av lokal") +
+  theme_classic() +
+  theme(strip.text = element_text(size = 14, face = "bold")) +
+  theme(axis.title = element_text(size = 16, face = "bold")) 
+```
+
+The number of insects per site developed over time as follows:
+```{r plot of insect numbers per site type, include = TRUE}
+plot_insectaggAb_2024
+```
+
+and species numbers developed as follows: 
+```{r plot of insect species numbers per site type, include = TRUE}
+plot_insectaggSR_2024
+```
+
+```{r summarising insect data, include = FALSE}
+insect_summary_df <- ddply(insect_data_2024, ~ Site_type, summarise, 
+                            InsectSR = length(unique(Species_sv)), 
+                            InsectAbundance = length(Species_sv))
+```
+
+The numbers of insects and insect species were distributed over the different site types as follows: 
+```{r calling insect data summary, include = TRUE}
+insect_summary_df
+```
+
+## Pollinator subset
+
+The above insect data contains all insects, even those that are not pollinating. Here, we also visualise the part of the dataset that exclusively contains pollinating insects.
+```{r pollinator subset, include = FALSE}
+# In the dataset, we included a column with information on whether species are pollinators or not. A simple yes-or-no question that gives a lot of information! In the be
+
+pollinator_data_2024 <- subset(insect_data_2024, `Pollinator?` == "Yes")
+
+df_pollinators_2024 <- ddply(pollinator_data_2024, ~ Week*Site_type*Site, summarise, 
+                             SR = length(unique(Species_sv)), 
+                             Abundance = length(Species_sv))
+
+df_pollinators_2024 <- df_pollinators_2024 %>%
+  mutate(Week = as.integer(as.character(Week)))
+
+df_pollinators_2024 <- df_pollinators_2024 %>% 
+  complete(Week = 18:34, Site_type = c("Sälg", "Gräsmatta", "Älvkant", "Ö"), Site = c("Sälg", "Bruksgräsmatta", "Paradgräsmatta", "Älvkant", "Ö_1", "Ö_2", "Ö_3", "Ö_4"), fill = list(SR = 0, Abundance = 0)) %>%
+  semi_join(valid_combinations, by = c("Site_type", "Site"))
+
+df_pollinators_2024$Site_type <- factor(df_pollinators_2024$Site_type, levels = c("Sälg", "Gräsmatta", "Älvkant", "Ö"))
+
+str(df_pollinators_2024)
+head(df_pollinators_2024)
+```
+
+```{r calculate total number of pollinator species and orders in 2024, include = FALSE}
+pollinator_SR_2024 = length(unique(pollinator_data_2024$Species_sv))
+pollinator_OR_2024 = length(unique(pollinator_data_2024$Order_lt))
+```
+
+```{r calculate total number of pollinators, include = FALSE}
+pollinator_Abundance_2024 = sum(df_pollinators_2024$Abundance)
+```
+
+The number of insect species in the dataset is  `r pollinator_SR_2024`, divided over `r pollinator_OR_2024` orders. The total number of organisms is `r pollinator_Abundance_2024`. The species and genera that were identified are:
+
+```{r list all pollinator species in 2024, include = FALSE}
+list_pollinators_2024 = list(unique(pollinator_data_2024$Species_sv))
+```
+
+```{r print pollinator species list, include = TRUE}
+list_pollinators_2024
+```
+
+```{r plotting pollinator data, per week, include = FALSE}
+plot_pollinatorAb_2024 <- ggplot(df_pollinators_2024, aes(x = as.factor(Week), y = Abundance, fill = Site)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  scale_y_continuous(name = "Antal pollinatörer", limits = c(0, 70)) +
+  scale_fill_manual(values = site_colors) +
+  labs(x = "Vecka", fill = "Lokal") +
+  theme_classic() +
+  theme(strip.text = element_text(size = 14, face = "bold")) +
+  theme(axis.title = element_text(size = 16, face = "bold")) 
+
+plot_pollinatorSR_2024 <- ggplot(df_pollinators_2024, aes(x = as.factor(Week), y = SR, fill = Site)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  scale_y_continuous(name = "Artrikedom pollinatörer", limits = c(0, 12), breaks = c(2, 4, 6, 8, 10, 12)) +
+  scale_fill_manual(values = site_colors) +
+  labs(x = "Vecka", fill = "Lokal") +
+  theme_classic() +
+  theme(strip.text = element_text(size = 14, face = "bold")) +
+  theme(axis.title = element_text(size = 16, face = "bold")) 
+```
+
+The number of pollinators per site developed over time as follows:
+```{r plot of pollinator numbers per site, include = TRUE}
+plot_pollinatorAb_2024
+```
+
+and species numbers were distributed over the sites as follows: 
+```{r plot of pollinator species numbers per site, include = TRUE}
+plot_pollinatorSR_2024
+```
+
+```{r build aggregated pollinator df, include = FALSE}
+df_pollinatorsagg_2024 <- ddply(pollinator_data_2024, ~ Week*Site_type, summarise, 
+                                SR = length(unique(Species_sv)), 
+                                Abundance = length(Species_sv))
+
+df_pollinatorsagg_2024 <- df_pollinatorsagg_2024 %>%
+  mutate(Week = as.integer(as.character(Week)))
+
+df_pollinatorsagg_2024 <- df_pollinatorsagg_2024 %>% 
+  complete(Week = 18:34, Site_type = c("Sälg", "Gräsmatta", "Älvkant", "Ö"), fill = list(SR = 0, Abundance = 0))
+
+df_pollinatorsagg_2024$Site_type <- factor(df_pollinatorsagg_2024$Site_type, levels = c("Sälg", "Gräsmatta", "Älvkant", "Ö"))
+
+str(df_pollinatorsagg_2024)
+head(df_pollinatorsagg_2024)
+```
+
+```{r plotting aggregated pollinator data, per week, include = FALSE}
+plot_pollinatoraggAb_2024 <- ggplot(df_pollinatorsagg_2024, aes(x = as.factor(Week), y = Abundance, fill = Site_type)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  scale_y_continuous(name = "Antal pollinatörer", limits = c(0, 100)) +
+  scale_fill_manual(values = sitetype_colors) +
+  labs(x = "Vecka", fill = "Typ av lokal") +
+  theme_classic() +
+  theme(strip.text = element_text(size = 14, face = "bold")) +
+  theme(axis.title = element_text(size = 16, face = "bold")) 
+
+plot_pollinatoraggSR_2024 <- ggplot(df_pollinatorsagg_2024, aes(x = as.factor(Week), y = SR, fill = Site_type)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  scale_y_continuous(name = "Artrikedom pollinatörer", limits = c(0, 11), breaks = c(2, 4, 6, 8, 10)) +
+  scale_fill_manual(values = sitetype_colors) +
+  labs(x = "Vecka", fill = "Typ av lokal") +
+  theme_classic() +
+  theme(strip.text = element_text(size = 14, face = "bold")) +
+  theme(axis.title = element_text(size = 16, face = "bold")) 
+```
+
+Summarising the pollinator data on the level of *site types* rather than *sites*, we see:
+
+```{r plot of aggregated pollinator abundance, include = TRUE}
+plot_pollinatoraggAb_2024
+```
+
+```{r plot of aggregated pollinator species richness, include = TRUE}
+plot_pollinatoraggSR_2024
+```
+
+```{r summarising pollinator data, include = FALSE}
+pollinator_summary_df <- ddply(pollinator_data_2024, ~ Site_type, summarise, 
+                            PollinatorSR = length(unique(Species_sv)), 
+                            PollinatorAbundance = length(Species_sv))
+```
+
+The numbers of pollinators and pollinator species were distributed over the different site types as follows: 
+```{r calling pollinator data summary, include = TRUE}
+pollinator_summary_df
+```
+
+# Combining plant and insect data
+
+Insect diversity may be correlated positively to plant diversity, since different insect species use different plant species for a range of purposes. Here, we explore the correlation between the two variables a bit further.
+
+```{r plotting insect SR over plant SR, include = FALSE}
+str(df_plants_2024)
+str(df_insects_2024)
+
+df_insects_2024 <- df_insects_2024 %>%
+  filter(Site_type != "Sälg") %>%
+  droplevels()
+
+if(nrow(df_plants_2024) == nrow(df_insects_2024)) {
+  df_combinedSRs <- df_plants_2024 %>%
+    mutate(SR_plants = SR) %>%         # Create a new SR column for plants
+    select(-SR) %>%                    # Remove the original SR column
+    mutate(SR_insects = df_insects_2024$SR, 
+           Abundance_insects = df_insects_2024$Abundance)  # Add SR column from insects
+} else {
+  stop("Datasets have different number of rows!")
+}
+str(df_combinedSRs)
+
+sitetype_colors <- c("Gräsmatta" = "#9F2B68", 
+                     "Älvkant" = "#104e8b",        
+                     "Ö" = "#458b00")   
+
+plot_combinedSRs_2024 <- ggplot(df_combinedSRs, aes(x = SR_plants, y = SR_insects, col = Site_type)) + 
+  geom_point(size = 3) +
+  scale_color_manual(values = sitetype_colors) +
+  labs(x = "Artrikedom växter", y = "Artrikedom insekter", col = "Typ av lokal") +
+  theme_classic() +
+  theme(strip.text = element_text(size = 14, face = "bold")) +
+  theme(axis.title = element_text(size = 16, face = "bold")) 
+
+df_combinedSRs <- cbind(df_combinedSRs, df_insects_2024$Abundance)
+
+plot_combined_2024 <- ggplot(df_combinedSRs, aes(x = SR_plants, y = `df_insects_2024$Abundance`, col = Site_type)) + 
+  geom_point(size = 3) +
+  scale_color_manual(values = sitetype_colors) +
+  labs(x = "Artrikedom växter", y = "Antal insekter", col = "Typ av lokal") +
+  theme_classic() +
+  theme(strip.text = element_text(size = 14, face = "bold")) +
+  theme(axis.title = element_text(size = 16, face = "bold")) 
+```
+
+The number of insect species plotted on the number of plant species looks as follows:
+```{r plot insect SR ~ plant SR, include = TRUE}
+plot_combinedSRs_2024
+```
+
+```{r plot insect abundance ~ plant SR, include = TRUE}
+plot_combined_2024
+```
+
+The above does not take into account that there are differences in size of the different sites (älvkant is larger than all öar) and that there's an important effect of time (more individuals and species during peak summer than before), so this data should not be interpreted as if there's a clear correlation between plant species richness and insect abundance or species richness. 
